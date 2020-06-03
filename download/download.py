@@ -16,10 +16,10 @@ import os
 import time
 import pdb
 # Relative imports of CONSTANTS in config/local_paths.py
-from config.local_paths import *
+from config.constants import *
 
 def initiate_logfile():
-    LOG_PATH = f"{DATA_PATH}/logs/{get_timestamp()}-log.txt"
+    LOG_PATH = f"{DATA_PATH}/download/logs/{get_timestamp()}-log.txt"
     with open(LOG_PATH, 'w') as f:
         f.write('\t'.join(['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout']) + '\n')
     return LOG_PATH
@@ -50,19 +50,19 @@ def run_sh_cmd(cmd):
 
 ascp_transfer = run_sh_cmd("ascp -QTd -l 300m -P33001 -@ 0:1000000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = run_sh_cmd("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
-
+kallisto_index = run_sh_cmd("kallisto index -i {spe} {cds_path}")
 
 def dl_fastq(runid):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
     Returns tuple of runtime of ascp download, string of library layout
     and out_path where fastq file is stored."""
     paired, unpaired = get_fastq_routes(runid)
-    out_path = f"{DATA_PATH}/fastq/{'/'.join(unpaired.split('/')[:-1])}"
+    out_path = f"{DATA_PATH}/download/fastq/{'/'.join(unpaired.split('/')[:-1])}"
     runtime, _ = ascp_transfer(route=paired, out_path=out_path)
-    if os.path.exists(f"{DATA_PATH}/fastq/{paired}"):
+    if os.path.exists(f"{DATA_PATH}/download/fastq/{paired}"):
         return runtime, 'paired', paired
     runtime, _ = ascp_transfer(route=unpaired, out_path=out_path)
-    if os.path.exists(f"{DATA_PATH}/fastq/{unpaired}"):
+    if os.path.exists(f"{DATA_PATH}/download/fastq/{unpaired}"):
         return runtime, 'unpaired', unpaired
     return runtime, 'failed', ''
 
@@ -73,10 +73,10 @@ def run_a_job(runid, idx_path):
     if layout == 'failed':
         return runid, ascp_runtime, 0, layout
     else:
-        out_dir = f"{DATA_PATH}/kallisto_out/{'/'.join(route.split('/')[:-1])}"
+        out_dir = f"{DATA_PATH}/download/kallisto_out/{'/'.join(route.split('/')[:-1])}"
         os.makedirs(out_dir, exist_ok=True)
         kal_runtime, _ = kallisto_quant(idx_path=idx_path,
-            out_dir=out_dir, fastq_path=f"{DATA_PATH}/fastq/{route}")
+            out_dir=out_dir, fastq_path=f"{DATA_PATH}/download/fastq/{route}")
         return runid, ascp_runtime, kal_runtime, layout
 
 def write_log(to_write):
@@ -93,11 +93,11 @@ def parallelize(job_fn, runids, idx_path):
         results.append(f.result())
     return results
 
-if __name__ == '__main__':
+def process_batch(runids, idx_path):
     LOG_PATH = initiate_logfile()
-    runids = ['DRR000618', 'DRR000619', 'DRR000620', 'DRR000621', 'ERR4138667', 'ERR4138668', 'ERR4138669', 'ERR4138670']
-    idx_path = f"{DATA_PATH}/Ath.idx"
     results = parallelize(run_a_job, runids, idx_path)
     for runid, ascp_runtime, kal_runtime, layout in results:
         to_write = f"{get_timestamp()}\t{runid}\t{ascp_runtime}\t{kal_runtime}\t{layout}\n"
         write_log(to_write)
+
+__all__ = ['process_batch']
