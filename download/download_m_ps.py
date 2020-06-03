@@ -1,15 +1,22 @@
+# Module Header ################################################################
+import sys
+from os.path import realpath, dirname
+import re
+
+if __name__ == '__main__':
+    abspath = realpath(dirname(__file__))
+    parent_module = re.search('^(.*plants-pipeline)', abspath).group()
+    sys.path.insert(0, parent_module)
+################################################################################
+
+# Module imports
 import concurrent.futures
 import datetime as dt
 import os
-from os.path import realpath, dirname
 import time
 import pdb
-
-def set_globals():
-    global DATA_PATH, ASPERA_SSH_KEY, LOG_PATH
-    DATA_PATH = realpath(dirname(__file__))
-    ASPERA_SSH_KEY = "/Users/wirriamm/Applications/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For MacOS
-    # ASPERA_SSH_KEY = "/home/.aspera/cli/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For Linux
+# Relative imports of CONSTANTS in config/local_paths.py
+from config.local_paths import *
 
 def initiate_logfile():
     LOG_PATH = f"{DATA_PATH}/logs/{get_timestamp()}-log.txt"
@@ -43,6 +50,7 @@ def run_sh_cmd(cmd):
 
 ascp_transfer = run_sh_cmd("ascp -QTd -l 300m -P33001 -@ 0:1000000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = run_sh_cmd("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
+
 
 def dl_fastq(runid):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
@@ -85,7 +93,6 @@ def parallelize(job_fn, runids, idx_path):
         results.append(f.result())
     return results
 
-set_globals()
 if __name__ == '__main__':
     LOG_PATH = initiate_logfile()
     runids = ['DRR000618', 'DRR000619', 'DRR000620', 'DRR000621', 'ERR4138667', 'ERR4138668', 'ERR4138669', 'ERR4138670']
