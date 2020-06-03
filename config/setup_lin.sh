@@ -23,6 +23,6 @@ else
 fi
 
 PATH=`pwd`/dependencies/kallisto:$PATH
-PATH=~/.aspera/cli/bin:$PATH # Specific path to mac
+PATH=~/.aspera/cli/bin:$PATH # Specific path to linux
 export $PATH
 echo "\$PATH exported, 'kallisto' and 'ascp' can be called from the CLI"

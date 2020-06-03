@@ -6,3 +6,4 @@ dependencies/*
 data-local/preprocess/*
 data-local/download/*
 data-local/postprocess/*
+local_paths.py
