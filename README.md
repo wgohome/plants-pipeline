@@ -23,7 +23,15 @@ pip install -r requirements.txt
 
 To setup directories tree for this project's data repository, run this command, replacing `path/to/data/repository/` with your desired path.
 ```
-python3 ./cofig/setup_data.py -p path/to/data/repository/
+python3 ./cofig/setup_data.py -p /path/to/data/repository/
+```
+
+Then, open `config/constants.py` file and edit the `ASPERA_SSH_KEY` and `DATA_PATH` variables accordingly.
+
+```
+DATA_PATH = "path/to/data/repository/"
+ASPERA_SSH_KEY = "/Users/wirriamm/Applications/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For MacOS
+ASPERA_SSH_KEY = "/home/.aspera/cli/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For Linux
 ```
 
 ### For subsequent runs
@@ -45,3 +53,13 @@ For Linux,
 ```
 source setup_lin.sh
 ```
+
+### Download one species
+
+Call the `despatch.py` script with the following arguments. `-i` is for the 3 letter alias for the species name and `-c` is for the name of the CDS fasta file found in pipeline_data/download/cds/ .
+
+```
+python download/despatch.py -i Ath -c Ath.cds.fasta
+```
+
+Once completed, the time for download could be checked from log file in /pipeline-data/download/logs/time, labelled by the timestamp the download was initiated.

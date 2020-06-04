@@ -19,7 +19,7 @@ import pdb
 from config.constants import *
 
 def initiate_logfile():
-    log_path = f"{DATA_PATH}/download/logs/time/{get_timestamp()}-time-log.txt"
+    log_path = f"{DATA_PATH}/download/logs/time/{get_timestamp()}-time-log.log"
     with open(log_path, 'w') as f:
         f.write('\t'.join(['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout']) + '\n')
     return log_path
