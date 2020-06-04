@@ -1,8 +1,20 @@
+# Plants Transcriptomics Pipeline
+
+---
+
+**NTU Plants Systems Biology and Evolution Laboratory**
+
+This repository is found in [Github Repository](https://github.com/wirriamm/plants-pipeline). Create pull requests for issues/bugs.
+
+[Contact me](mailto:will0046@e.ntu.edu.sg)
+
+---
+
 ### First setup
 
-Ensure you are in the plants-pipeline directory.
+Clone the repository to you rmachine. Ensure you are in the plants-pipeline directory.
 
-To setup for the first time, create a virtual environment. Ensure you have installed Python 3.8. Run the following command. If it is aliased as python3, replace `python3.8` with `python3`. `virtualenv` can be replaced with any other Python environment management tools you prefer.
+To setup for the first time, create a virtual environment. Ensure you have installed Python 3.8. Run the following command below. If it is aliased as python3, replace `python3.8` with `python3`. `virtualenv` can be replaced with any other Python environment management tools you prefer.
 ```
 virtualenv -p python3.8 proj_env
 pip install --upgrade pip
@@ -24,6 +36,7 @@ source proj_env/bin/activate
 ```
 
 Then, to setup kallisto and ascp commands,
+
 For MacOS,
 ```
 source setup_mac.sh
