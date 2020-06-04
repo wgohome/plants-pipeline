@@ -4,7 +4,9 @@ if [ ! -d dependencies/kallisto ]; then
   # Specific download url for mac:
   # wget -O - https://github.com/pachterlab/kallisto/releases/download/v0.46.1/kallisto_mac-v0.46.1.tar.gz | tar -C dependencies/ -xf -
   # For linux:
-  wget -O - https://github.com/pachterlab/kallisto/releases/download/v0.46.1/kallisto_linux-v0.46.1.tar.gz | tar -C dependencies/ -xf -
+  wget -O kallisto.tar.gz https://github.com/pachterlab/kallisto/releases/download/v0.46.1/kallisto_linux-v0.46.1.tar.gz
+  tar -C dependencies/ -xf kallisto.tar.gz
+  rm -r kallisto.tar.gz
 else
   echo "kallisto already present in ./dependencies"
 fi
