@@ -10,10 +10,12 @@ DATA_PATH = args.data_path[0]
 
 os.makedirs(f"{DATA_PATH}/pipeline-data/download/cds", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/pipeline-data/download/idx", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/pipeline-data/download/fastq", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/pipeline-data/download/fastq_tmp", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/pipeline-data/download/kallsito_tmp", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/pipeline-data/download/kallsito_out", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/pipeline-data/download/logs/status", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/pipeline-data/download/logs/time", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/pipeline-data/download/logs/initiation", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/pipeline-data/download/logs/runtime", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/pipeline-data/download/logs/validation", exist_ok=True)
 
 os.makedirs(f"{DATA_PATH}/pipeline-data/preprocess/out/ena_runtables", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/pipeline-data/preprocess/out/sra_runtables", exist_ok=True)

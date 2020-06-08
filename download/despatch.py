@@ -37,4 +37,4 @@ runids = runs_df['Run'].iloc[37::500][:8]
 if not os.path.exists(idx_path):
     runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
 if __name__ == '__main__':
-    proc.process_batch(runids, idx_path)
+    proc.process_batch(runids, idx_path, spe)
