@@ -55,7 +55,7 @@ kallisto_index = run_sh_cmd("kallisto index -i {idx_path} {cds_path}")
 def dl_fastq(runid):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
     Returns tuple of runtime of ascp download, string of library layout
-    and out_path where fastq file is stored."""
+    and route where fastq file is stored."""
     paired, unpaired = get_fastq_routes(runid)
     out_path = f"{DATA_PATH}/download/fastq/{'/'.join(unpaired.split('/')[:-1])}"
     runtime, _ = ascp_transfer(route=paired, out_path=out_path)
