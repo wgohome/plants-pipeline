@@ -56,6 +56,7 @@ def wrap_sh_command(cmd):
 ascp_transfer = wrap_sh_command("ascp -QTd -l 300m -P33001 -@ 0:1000000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = wrap_sh_command("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
 kallisto_index = wrap_sh_command("kallisto index -i {idx_path} {cds_path}")
+kallisto_quant_curl = wrap_sh_command()
 
 def dl_fastq(runid):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
@@ -82,8 +83,10 @@ def run_a_job(runid, idx_path, init_log_path, runtime_log_path):
     if layout == 'failed':
         kal_runtime = 0
     else:
+        out_dir = f"{DATA_PATH}/download/kallisto-tmp/{runid}/"
+        os.makedirs(out_dir, exist_ok=True)
         kal_runtime, _ = kallisto_quant(idx_path=idx_path,
-            out_dir=f"{DATA_PATH}/download/kallisto-tmp/{runid}/",
+            out_dir=out_dir,
             fastq_path=f"{DATA_PATH}/download/fastq-tmp/{filename}")
     fields = [get_timestamp(), runid, str(ascp_runtime), str(kal_runtime), layout]
     write_log('\t'.join(fields) + '\n', runtime_log_path)
