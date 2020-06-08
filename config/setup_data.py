@@ -17,10 +17,10 @@ os.makedirs(f"{DATA_PATH}/download/logs/initiation", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/logs/runtime", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/logs/validation", exist_ok=True)
 
-os.makedirs(f"{DATA_PATH}/preprocess/out/ena_runtables", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/preprocess/out/sra_runtables", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/preprocess/out/ena_annotations", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/preprocess/out/sra_annotations", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/preprocess/out/ena-runtables", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/preprocess/out/sra-runtables", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/preprocess/out/ena-annotations", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/preprocess/out/sra-annotations", exist_ok=True)
 
 os.makedirs(f"{DATA_PATH}/postprocess", exist_ok=True)
 

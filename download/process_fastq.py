@@ -65,10 +65,10 @@ def dl_fastq(runid):
     f"{runid}_1.fastq.gz", f"{runid}.fastq.gz"
     out_path = f"{DATA_PATH}/download/fastq_tmp/"
     runtime, _ = ascp_transfer(route=p_route, out_path=out_path)
-    if os.path.exists(f"{DATA_PATH}/download/fastq_tmp/{p_file}"):
+    if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{p_file}"):
         return runtime, 'paired', p_file
     runtime, _ = ascp_transfer(route=up_route, out_path=out_path)
-    if os.path.exists(f"{DATA_PATH}/download/fastq_tmp/{up_file}"):
+    if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{up_file}"):
         return runtime, 'unpaired', up_file
     return runtime, 'failed', ''
 
@@ -83,8 +83,8 @@ def run_a_job(runid, idx_path, init_log_path, runtime_log_path):
         kal_runtime = 0
     else:
         kal_runtime, _ = kallisto_quant(idx_path=idx_path,
-            out_dir=f"{DATA_PATH}/download/kallisto_tmp/{runid}/",
-            fastq_path=f"{DATA_PATH}/download/fastq_tmp/{filename}")
+            out_dir=f"{DATA_PATH}/download/kallisto-tmp/{runid}/",
+            fastq_path=f"{DATA_PATH}/download/fastq-tmp/{filename}")
     fields = [get_timestamp(), runid, str(ascp_runtime), str(kal_runtime), layout]
     write_log('\t'.join(fields) + '\n', runtime_log_path)
     return runid, ascp_runtime, kal_runtime, layout
