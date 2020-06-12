@@ -41,14 +41,29 @@ def get_fastq_routes(runid):
     dirs = f"{runid[:6]}/{dir2}{runid}/"
     return f"{dirs}{p_file}", f"{dirs}{up_file}", p_file, up_file
 
-def wrap_sh_command(cmd):
+def get_ftp_paths(runid):
+    p_route, up_route, _, _ = get_fastq_routes(runid)
+    return f"ftp://ftp.sra.ebi.ac.uk/vol1/fastq/{p_route}", f"ftp://ftp.sra.ebi.ac.uk/vol1/fastq/{up_route}"
+
+def run_bash_command(runid, cmd):
+    """Creates a .sh file for cmd, runs it with bash and deletes the .sh file"""
+    bash_script_path = f"{DATA_PATH}/download/bash-tmp/{runid}.sh"
+    with open(bash_script_path, 'w') as f:
+        f.write(cmd)
+    os.system(f"bash {bash_script_path}")
+    os.remove(bash_script_path)
+
+def wrap_sh_command(cmd, bash=False):
     """Returns sh_function which runs the shell command cmd string formatted with kawrgs."""
     def sh_function(**kwargs):
         """Returns runtime and os.system exit code from running shell command cmd,
         formatted with kawrgs."""
         start = time.time()
         kwargs['ASPERA_SSH_KEY'] = ASPERA_SSH_KEY
-        exit_code = os.system(cmd.format(**kwargs))
+        if bash:
+            exit_code = run_bash_command(kwargs['runid'], cmd.format(**kwargs))
+        else:
+            exit_code = os.system(cmd.format(**kwargs))
         runtime = round(time.time() - start, 2)
         return runtime, exit_code
     return sh_function
@@ -56,7 +71,7 @@ def wrap_sh_command(cmd):
 ascp_transfer = wrap_sh_command("ascp -QTd -l 300m -P33001 -@ 0:1000000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = wrap_sh_command("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
 kallisto_index = wrap_sh_command("kallisto index -i {idx_path} {cds_path}")
-kallisto_quant_curl = wrap_sh_command()
+kallisto_quant_curl = wrap_sh_command("kallisto quant -i {idx_path} -o {out_dir} --single -l 200 -s 20 -t 2 <(curl -L -r 0-1000000000 -m 600 --speed-limit 1000000 --speed-time 120 {ftp_path} 2> {runid}.log)", bash=True)
 
 def dl_fastq(runid):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
@@ -92,6 +107,21 @@ def run_a_job(runid, idx_path, init_log_path, runtime_log_path):
     write_log('\t'.join(fields) + '\n', runtime_log_path)
     return runid, ascp_runtime, kal_runtime, layout
 
+def kallisto_stream(runid, idx_path, init_log_path, runtime_log_path):
+    write_log(f"{get_timestamp()}\t{runid}\n", init_log_path)
+    p_ftp_path, up_ftp_path = get_ftp_paths(runid)
+    out_dir = f"{DATA_PATH}/download/kallisto-tmp/{runid}/"
+    os.makedirs(out_dir, exist_ok=True)
+    runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=p_ftp_path)
+    if os.path.exists(f"{out_dir}run_info.json"):
+        fields = [get_timestamp(), runid, str(runtime), 'paired']
+    runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=up_ftp_path)
+    if os.path.exists(f"{out_dir}run_info.json"):
+        fields = [get_timestamp(), runid, str(runtime), 'unpaired']
+    fields = [get_timestamp(), runid, str(runtime), 'failed']
+    write_log('\t'.join(fields) + '\n', runtime_log_path)
+    return fields
+
 def parallelize(job_fn, runids, idx_path, init_log_path):
     """Executes job_fn on each elements in runids in parallel.
     Returns a list of the return values of job_fn."""
@@ -106,7 +136,7 @@ def process_batch(runids, idx_path, spe):
     init_log_path = initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
     runtime_log_path = initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
     batch_start = time.time()
-    results = parallelize(run_a_job, runids, idx_path, init_log_path)
+    results = parallelize(run_a_job, runids, idx_path, init_log_path, runtime_log_path)
     batch_runtime = round(time.time() - batch_start, 2)
     write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 
