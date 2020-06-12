@@ -27,7 +27,7 @@ args = parser.parse_args()
 spe = args.spe[0].capitalize()
 cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
 idx_path = f"{DATA_PATH}/download/idx/{spe}.idx"
-runtable_path = f"{DATA_PATH}/preprocess/out/sra_runtables/{spe}_sra_runtable.txt"
+runtable_path = f"{DATA_PATH}/preprocess/out/sra-runtables/{spe}_sra_runtable.txt"
 assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/out/sra-runtables."
 
 # TODO: Make it robust to SRA inconsistent header names
