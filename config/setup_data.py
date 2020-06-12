@@ -8,11 +8,12 @@ parser.add_argument('-p', '--path', nargs=1, metavar='data_path',
 args = parser.parse_args()
 DATA_PATH = args.data_path[0] + '/pipeline-data'
 
+os.makedirs(f"{DATA_PATH}/download/bash-tmp", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/cds", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/idx", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/download/fastq_tmp", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/download/kallsito_tmp", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/download/kallsito_out", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/download/fastq-tmp", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/download/kallsito-tmp", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/download/kallsito-out", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/logs/initiation", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/logs/runtime", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/logs/validation", exist_ok=True)

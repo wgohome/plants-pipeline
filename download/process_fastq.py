@@ -60,6 +60,7 @@ def wrap_sh_command(cmd, bash=False):
         formatted with kawrgs."""
         start = time.time()
         kwargs['ASPERA_SSH_KEY'] = ASPERA_SSH_KEY
+        kwargs['DATA_PATH'] = DATA_PATH
         if bash:
             exit_code = run_bash_command(kwargs['runid'], cmd.format(**kwargs))
         else:
@@ -71,7 +72,7 @@ def wrap_sh_command(cmd, bash=False):
 ascp_transfer = wrap_sh_command("ascp -QTd -l 300m -P33001 -@ 0:1000000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = wrap_sh_command("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
 kallisto_index = wrap_sh_command("kallisto index -i {idx_path} {cds_path}")
-kallisto_quant_curl = wrap_sh_command("kallisto quant -i {idx_path} -o {out_dir} --single -l 200 -s 20 -t 2 <(curl -L -r 0-1000000000 -m 600 --speed-limit 1000000 --speed-time 120 {ftp_path} 2> {runid}.log)", bash=True)
+kallisto_quant_curl = wrap_sh_command("kallisto quant -i {idx_path} -o {out_dir} --single -l 200 -s 20 -t 2 <(curl -L -r 0-1000000000 -m 600 --speed-limit 1000000 --speed-time 30 '{ftp_path}' 2> '{DATA_PATH}/download/kallisto-tmp/{runid}.log')", bash=True)
 
 def dl_fastq(runid):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
@@ -115,10 +116,14 @@ def kallisto_stream(runid, idx_path, init_log_path, runtime_log_path):
     runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=p_ftp_path)
     if os.path.exists(f"{out_dir}run_info.json"):
         fields = [get_timestamp(), runid, str(runtime), 'paired']
-    runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=up_ftp_path)
-    if os.path.exists(f"{out_dir}run_info.json"):
-        fields = [get_timestamp(), runid, str(runtime), 'unpaired']
-    fields = [get_timestamp(), runid, str(runtime), 'failed']
+        os.remove(f"{DATA_PATH}/download/kallisto-tmp/{runid}.log")
+    else:
+        runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=up_ftp_path)
+        if os.path.exists(f"{out_dir}run_info.json"):
+            fields = [get_timestamp(), runid, str(runtime), 'unpaired']
+            os.remove(f"{DATA_PATH}/download/kallisto-tmp/{runid}.log")
+        else:
+            fields = [get_timestamp(), runid, str(runtime), 'failed']
     write_log('\t'.join(fields) + '\n', runtime_log_path)
     return fields
 
@@ -132,11 +137,14 @@ def parallelize(job_fn, runids, idx_path, init_log_path):
         results.append(f.result())
     return results
 
-def process_batch(runids, idx_path, spe):
+def process_batch(runids, idx_path, spe, curl_stream=False):
     init_log_path = initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
     runtime_log_path = initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
     batch_start = time.time()
-    results = parallelize(run_a_job, runids, idx_path, init_log_path, runtime_log_path)
+    if curl_stream:
+        results = parallelize(kallisto_stream, runids, idx_path, init_log_path, runtime_log_path)
+    else:
+        results = parallelize(run_a_job, runids, idx_path, init_log_path, runtime_log_path)
     batch_runtime = round(time.time() - batch_start, 2)
     write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 
