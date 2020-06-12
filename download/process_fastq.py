@@ -127,11 +127,11 @@ def kallisto_stream(runid, idx_path, init_log_path, runtime_log_path):
     write_log('\t'.join(fields) + '\n', runtime_log_path)
     return fields
 
-def parallelize(job_fn, runids, idx_path, init_log_path):
+def parallelize(job_fn, runids, idx_path, init_log_path, runtime_log_path):
     """Executes job_fn on each elements in runids in parallel.
     Returns a list of the return values of job_fn."""
     with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
-        futures = [executor.submit(job_fn, runid, idx_path) for runid in runids]
+        futures = [executor.submit(job_fn, runid, idx_path, init_log_path, runtime_log_path) for runid in runids]
     results = []
     for f in concurrent.futures.as_completed(futures):
         results.append(f.result())
