@@ -28,7 +28,7 @@ spe = args.spe[0].capitalize()
 cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
 idx_path = f"{DATA_PATH}/download/idx/{spe}.idx"
 runtable_path = f"{DATA_PATH}/preprocess/out/sra_runtables/{spe}_sra_runtable.txt"
-assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/out/sra_runtables."
+assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/out/sra-runtables."
 
 # TODO: Make it robust to SRA inconsistent header names
 runs_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False, dtype='string', usecols=['Run', 'Bytes'])
@@ -37,4 +37,4 @@ runids = runs_df['Run'].iloc[37::500][:8]
 if not os.path.exists(idx_path):
     runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
 if __name__ == '__main__':
-    proc.process_batch(runids, idx_path)
+    proc.process_batch(runids, idx_path, spe)

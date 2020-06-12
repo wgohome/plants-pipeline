@@ -3,7 +3,5 @@ __pycache__
 proj_env
 dependencies/*
 !dependencies/.gitkeep
-data-local/preprocess/*
-data-local/download/*
-data-local/postprocess/*
+data-local
 local_paths.py
