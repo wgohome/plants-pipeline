@@ -108,22 +108,43 @@ def run_a_job(runid, idx_path, init_log_path, runtime_log_path):
     write_log('\t'.join(fields) + '\n', runtime_log_path)
     return runid, ascp_runtime, kal_runtime, layout
 
+def check_error_type(runid):
+    log_path = f"{DATA_PATH}/download/kallisto-tmp/{runid}.log"
+    log = open(log_path,'r').read()
+    if 'curl: (28)' in log:
+        return 'operation_timeout'
+    elif 'curl: (78)' in log:
+        return 'remote_file_not_found'
+    elif 'curl: (9)' in log:
+        return 'remote_access_denied'
+    else:
+        return 'no_download_error'
+
+def check_zero_processed(runid):
+    run_info_path = f"{DATA_PATH}/download/kallisto-tmp/{runid}/run_info.json"
+    return '"n_processed": 0' in open(run_info_path,'r').read()
+
 def kallisto_stream(runid, idx_path, init_log_path, runtime_log_path):
     write_log(f"{get_timestamp()}\t{runid}\n", init_log_path)
     p_ftp_path, up_ftp_path = get_ftp_paths(runid)
     out_dir = f"{DATA_PATH}/download/kallisto-tmp/{runid}/"
     os.makedirs(out_dir, exist_ok=True)
     runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=p_ftp_path)
-    if os.path.exists(f"{out_dir}run_info.json"):
-        fields = [get_timestamp(), runid, str(runtime), 'paired']
+    if not check_zero_processed(runid):
+        error_type = check_error_type(runid)
+        if error_type == 'no_download_error':
+            fields = [get_timestamp(), runid, str(runtime), 'paired']
+        else:
+            fields = [get_timestamp(), runid, str(runtime), error_type]
         os.remove(f"{DATA_PATH}/download/kallisto-tmp/{runid}.log")
     else:
         runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=up_ftp_path)
-        if os.path.exists(f"{out_dir}run_info.json"):
+        error_type = check_error_type(runid)
+        if error_type == 'no_download_error':
             fields = [get_timestamp(), runid, str(runtime), 'unpaired']
-            os.remove(f"{DATA_PATH}/download/kallisto-tmp/{runid}.log")
         else:
-            fields = [get_timestamp(), runid, str(runtime), 'failed']
+            fields = [get_timestamp(), runid, str(runtime), error_type]
+        os.remove(f"{DATA_PATH}/download/kallisto-tmp/{runid}.log")
     write_log('\t'.join(fields) + '\n', runtime_log_path)
     return fields
 
