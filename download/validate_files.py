@@ -25,13 +25,6 @@ parser.add_argument('-s', '--spe', nargs=1, metavar='species_alias',
 args = parser.parse_args()
 spe = args.spe[0].capitalize()
 
-# Pull out latest log for species and find out completed/incomplete Run IDs
-# If no log present, pull runids from runtable
-# Check if kallisto output present for runids
-# If kallisto output present, move RunID kallisto file to kallisto-tmp, arranged in ENA dir structure
-# If kallisto output present, delete fastq from fastq-tmp
-# Create log to update completed RunIDs and incomplete RunIDs
-
 def species_progress(spe):
     """Returns 2 lists for completed and incomplete Run IDs respectively, for the species alias, spe, specified.
     Pull out latest log for species and find out completed/incomplete Run IDs.
@@ -71,7 +64,12 @@ def sweep(runid):
     target_dir = f"{DATA_PATH}/download/kallisto-out/{build_route(runid)}"
     os.makedirs(target_dir, exist_ok=True)
     _ = shutil.move(tmp_dir, target_dir)
-    os.remove(runid)
+    p_fastq = f"{DATA_PATH}/download/fastq-tmp/{runid}_1.fastq.gz"
+    up_fastq = f"{DATA_PATH}/download/fastq-tmp/{runid}.fastq.gz"
+    if os.path.exists(p_fastq):
+        os.remove(p_fastq)
+    elif os.path.exists(up_fastq):
+        os.remove(up_fastq)
 
 def validate_latest_batch(spe):
     completed, incomplete = species_progress(spe)
@@ -80,7 +78,6 @@ def validate_latest_batch(spe):
             sweep(runid)
             completed.append(runid)
             incomplete.remove(runid)
-    # write new log
     log_path = helpers.initiate_logfile('progress', ['runid', 'status'], spe=f"{spe}-")
     for runid in completed:
         to_write = f"{runid}\tcompleted\n"
@@ -91,3 +88,10 @@ def validate_latest_batch(spe):
 
 if __name__ == '__main__':
     validate_latest_batch(spe)
+
+# Pull out latest log for species and find out completed/incomplete Run IDs
+# If no log present, pull runids from runtable
+# Check if kallisto output present for runids
+# If kallisto output present, move RunID kallisto file to kallisto-tmp, arranged in ENA dir structure
+# If kallisto output present, delete fastq from fastq-tmp
+# Create log to update completed RunIDs and incomplete RunIDs
