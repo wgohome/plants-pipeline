@@ -13,7 +13,8 @@ import os
 import argparse
 import pandas as pd
 # Relative imports
-from config.constants import *
+from config.constants import DATA_PATH
+import helpers
 import process_fastq as proc
 import linear_download as linear
 
@@ -28,15 +29,16 @@ args = parser.parse_args()
 spe = args.spe[0].capitalize()
 cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
 idx_path = f"{DATA_PATH}/download/idx/{spe}.idx"
-runtable_path = f"{DATA_PATH}/preprocess/out/sra-runtables/{spe}_sra_runtable.txt"
+runtable_path = helpers.build_runtable_path(spe)
 assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/out/sra-runtables."
 
 # TODO: Make it robust to SRA inconsistent header names
-runs_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False, dtype='string', usecols=['Run', 'Bytes'])
-runids = runs_df['Run'].iloc[::300]
+runs_df = helpers.read_runtable(spe, runtable_path)
+runids = runs_df['Run'].iloc[::300][:5]
 
-if not os.path.exists(idx_path):
-    runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
 if __name__ == '__main__':
+    if not os.path.exists(idx_path):
+        runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
     # proc.process_batch(runids, idx_path, spe, curl_stream=False)
+    # proc.process_batch(runids, idx_path, spe, curl_stream=True)
     linear.process_batch(runids, idx_path, spe, curl_stream=False)

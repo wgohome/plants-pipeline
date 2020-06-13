@@ -11,3 +11,5 @@ else:
     print("Please manually set your constants")
     DATA_PATH = input("DATA_PATH: ")
     ASPERA_SSH_KEY = input("ASPERA_SSH_KEY: ")
+
+__all__ = ['DATA_PATH', 'ASPERA_SSH_KEY']
