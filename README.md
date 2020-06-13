@@ -2,7 +2,7 @@
 
 ---
 
-**NTU Plants Systems Biology and Evolution Laboratory** (Mutwil's Lab)
+**NTU Plants Systems Biology and Evolution Laboratory** ([Mutwil's Lab](https://www.plant.tools))
 
 This repository is found in [Github Repository](https://github.com/wirriamm/plants-pipeline). Create pull requests for issues/bugs.
 
@@ -18,7 +18,7 @@ To setup this pipeline for the first time, create a virtual environment. Ensure 
 ```
 virtualenv -p python3.8 proj_env
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 ```
 
 To setup the directories for this project's data repository, run this command, replacing `path/to/data/repository/` with your desired path.
@@ -57,16 +57,20 @@ source config/setup_lin.sh
 ### Download one species
 
 Call the `despatch.py` script with the following arguments.
-- `-i` is for the 3 letter alias for the species name. For example, Arabidopsis thaliana should have the alias 'Ath'.
+- `-s` is for the 3 letter alias for the species name. For example, Arabidopsis thaliana should have the alias 'Ath'.
 - `-c` is for the name (not full path) of the CDS fasta file found in `pipeline-data/download/cds/`. It will be good to set up a convention such as 'Ath.cds.fasta' for the file naming.
+- `-m` if for one of the two download methods: 'ascp' or 'curl'
+- `-l` is an optional tag to indicate if download is to be done linearly. By default, download will be in parallel processes.
 
+For example:
 ```
-python download/despatch.py -i Ath -c Ath.cds.fasta
+python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp
+python download/despatch.py -s Ath -c Ath.cds.fasta -m curl -l
 ```
 
 To run the download in the background, instead, run this:
 ```
-nohup python download/despatch.py -i Ath -c Ath.cds.fasta &
+nohup python download/despatch.py -i Ath -c Ath.cds.fasta -m ascp &
 ```
 The stdout will be found in the file 'nohup.out'. However, due to multi-processing, the stdout might not make much sense. Instead, the log files can be more informative.
 
@@ -82,19 +86,19 @@ Once the download have completed, two logfiles can be checked. Logfiles' names b
 
 ### Checking the kallisto output files and reinitiating new batch for missing files
 
+After downloading a batch, to check the successful downloads against the Run IDs in the runtable, run the following file.
+- `-s` specifies the species three-letter alias
+
+```
+python download/validate_files.py -s Ath
+```
+
+This script will:
+- Check `pipline-data/download/kallisto-tmp` for successful downloads of kallisto output files
+- Move kallisto output directories to `pipline-data/download/kallisto-out` based on ENA ftp directory structure
+- Remove fastq files of successful downloads from `pipline-data/download/fastq-tmp`
+- Update a new log file in `pipline-data/download/logs/progress/[timestamp]-[spe]-progress.log`
+
+### Redownloading failed Run IDs
+
 _To be updated_
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
