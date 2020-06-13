@@ -34,7 +34,7 @@ assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipelin
 runs_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False, dtype='string', usecols=['Run', 'Bytes'])
 runids = runs_df['Run'].iloc[::300][:5]
 
-if not os.path.exists(idx_path):
-    runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
 if __name__ == '__main__':
+    if not os.path.exists(idx_path):
+        runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
     proc.process_batch(runids, idx_path, spe, curl_stream=True)
