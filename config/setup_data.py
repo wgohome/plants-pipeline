@@ -16,7 +16,7 @@ os.makedirs(f"{DATA_PATH}/download/kallisto-tmp", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/kallisto-out", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/logs/initiation", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/download/logs/runtime", exist_ok=True)
-os.makedirs(f"{DATA_PATH}/download/logs/validation", exist_ok=True)
+os.makedirs(f"{DATA_PATH}/download/logs/progress", exist_ok=True)
 
 os.makedirs(f"{DATA_PATH}/preprocess/out/ena-runtables", exist_ok=True)
 os.makedirs(f"{DATA_PATH}/preprocess/out/sra-runtables", exist_ok=True)

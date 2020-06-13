@@ -17,13 +17,7 @@ import time
 import pdb
 # Relative imports of CONSTANTS in config/constants.py
 from config.constants import DATA_PATH, ASPERA_SSH_KEY
-from helpers import get_timestamp, write_log
-
-def initiate_logfile(log_type, headers, spe=''):
-    log_path = f"{DATA_PATH}/download/logs/{log_type}/{get_timestamp()}-{spe}{log_type}.log"
-    with open(log_path, 'w') as f:
-        f.write('\t'.join(headers) + '\n')
-    return log_path
+import helpers
 
 def get_fastq_routes(runid):
     """Returns tuple of trailing path of fastq file in vol1/fastq/ server's directory, for paired and unpaired libraries,
@@ -153,8 +147,8 @@ def parallelize(job_fn, runids, idx_path, init_log_path, runtime_log_path):
     return results
 
 def process_batch(runids, idx_path, spe, curl_stream=False):
-    init_log_path = initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
-    runtime_log_path = initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
+    init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
+    runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
     batch_start = time.time()
     if curl_stream:
         results = parallelize(kallisto_stream, runids, idx_path, init_log_path, runtime_log_path)
@@ -164,4 +158,3 @@ def process_batch(runids, idx_path, spe, curl_stream=False):
     write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 
 __all__ = ['process_batch', 'kallisto_index']
-

@@ -13,7 +13,8 @@ import os
 import argparse
 import pandas as pd
 # Relative imports
-from config.constants import *
+from config.constants import DATA_PATH
+import helpers
 import process_fastq as proc
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
@@ -27,11 +28,11 @@ args = parser.parse_args()
 spe = args.spe[0].capitalize()
 cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
 idx_path = f"{DATA_PATH}/download/idx/{spe}.idx"
-runtable_path = f"{DATA_PATH}/preprocess/out/sra-runtables/{spe}_sra_runtable.txt"
+runtable_path = helpers.build_runtable_path(spe)
 assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/out/sra-runtables."
 
 # TODO: Make it robust to SRA inconsistent header names
-runs_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False, dtype='string', usecols=['Run', 'Bytes'])
+runs_df = helpers.read_runtable(spe, runtable_path)
 runids = runs_df['Run'].iloc[::300][:5]
 
 if __name__ == '__main__':
