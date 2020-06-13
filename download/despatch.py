@@ -15,6 +15,7 @@ import pandas as pd
 # Relative imports
 from config.constants import *
 import process_fastq as proc
+import linear_download as linear
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
 parser.add_argument('-i', '--input', nargs=1, metavar='species_alias',
@@ -32,9 +33,10 @@ assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipelin
 
 # TODO: Make it robust to SRA inconsistent header names
 runs_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False, dtype='string', usecols=['Run', 'Bytes'])
-runids = runs_df['Run'].iloc[::300][:5]
+runids = runs_df['Run'].iloc[::300]
 
 if not os.path.exists(idx_path):
     runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
 if __name__ == '__main__':
-    proc.process_batch(runids, idx_path, spe, curl_stream=True)
+    # proc.process_batch(runids, idx_path, spe, curl_stream=False)
+    linear.process_batch(runids, idx_path, spe, curl_stream=False)
