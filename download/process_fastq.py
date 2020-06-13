@@ -72,7 +72,7 @@ def run_a_job(runid, idx_path, init_log_path, runtime_log_path):
     returns runid, ascp_runtime, kal_runtime, run_layout.
     Writes initiation time for this runid in init_log_path and
     write runtimes and layout in runtime_log_path"""
-    write_log(f"{get_timestamp()}\t{runid}\n", init_log_path)
+    helpers.write_log(f"{helpers.get_timestamp()}\t{runid}\n", init_log_path)
     ascp_runtime, layout, filename = dl_fastq(runid)
     if layout == 'failed':
         kal_runtime = 0
@@ -82,9 +82,9 @@ def run_a_job(runid, idx_path, init_log_path, runtime_log_path):
         kal_runtime, _ = kallisto_quant(idx_path=idx_path,
             out_dir=out_dir,
             fastq_path=f"{DATA_PATH}/download/fastq-tmp/{filename}")
-    fields = [get_timestamp(), runid, str(ascp_runtime), str(kal_runtime), layout]
-    write_log('\t'.join(fields) + '\n', runtime_log_path)
-    return runid, ascp_runtime, kal_runtime, layout
+    fields = [helpers.get_timestamp(), runid, str(ascp_runtime), str(kal_runtime), layout]
+    helpers.write_log('\t'.join(fields) + '\n', runtime_log_path)
+    return [runid, ascp_runtime, kal_runtime, layout]
 
 def check_error_type(runid):
     log_path = f"{DATA_PATH}/download/kallisto-tmp/{runid}.log"
@@ -103,7 +103,7 @@ def check_zero_processed(runid):
     return '"n_processed": 0' in open(run_info_path,'r').read()
 
 def kallisto_stream(runid, idx_path, init_log_path, runtime_log_path):
-    write_log(f"{get_timestamp()}\t{runid}\n", init_log_path)
+    helpers.write_log(f"{helpers.get_timestamp()}\t{runid}\n", init_log_path)
     p_ftp_path, up_ftp_path = get_ftp_paths(runid)
     out_dir = f"{DATA_PATH}/download/kallisto-tmp/{runid}/"
     os.makedirs(out_dir, exist_ok=True)
@@ -111,19 +111,19 @@ def kallisto_stream(runid, idx_path, init_log_path, runtime_log_path):
     if not check_zero_processed(runid):
         error_type = check_error_type(runid)
         if error_type == 'no_download_error':
-            fields = [get_timestamp(), runid, str(runtime), 'paired']
+            fields = [helpers.get_timestamp(), runid, str(runtime), 'paired']
         else:
-            fields = [get_timestamp(), runid, str(runtime), error_type]
+            fields = [helpers.get_timestamp(), runid, str(runtime), error_type]
         os.remove(f"{DATA_PATH}/download/kallisto-tmp/{runid}.log")
     else:
         runtime, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=up_ftp_path)
         error_type = check_error_type(runid)
         if error_type == 'no_download_error':
-            fields = [get_timestamp(), runid, str(runtime), 'unpaired']
+            fields = [helpers.get_timestamp(), runid, str(runtime), 'unpaired']
         else:
-            fields = [get_timestamp(), runid, str(runtime), error_type]
+            fields = [helpers.get_timestamp(), runid, str(runtime), error_type]
         os.remove(f"{DATA_PATH}/download/kallisto-tmp/{runid}.log")
-    write_log('\t'.join(fields) + '\n', runtime_log_path)
+    helpers.write_log('\t'.join(fields) + '\n', runtime_log_path)
     return fields
 
 def parallelize(job_fn, runids, idx_path, init_log_path, runtime_log_path):
@@ -145,6 +145,6 @@ def process_batch(runids, idx_path, spe, curl_stream=False):
     else:
         results = parallelize(run_a_job, runids, idx_path, init_log_path, runtime_log_path)
     batch_runtime = round(time.time() - batch_start, 2)
-    write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
+    helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 
 __all__ = ['process_batch', 'kallisto_index']
