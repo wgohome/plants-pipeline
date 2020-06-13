@@ -19,18 +19,8 @@ import pdb
 from config.constants import DATA_PATH, ASPERA_SSH_KEY
 import helpers
 
-def get_fastq_routes(runid):
-    """Returns tuple of trailing path of fastq file in vol1/fastq/ server's directory, for paired and unpaired libraries,
-    and also file names for paired and unpaired libraries"""
-    p_file, up_file = f"{runid}_1.fastq.gz", f"{runid}.fastq.gz"
-    dir2 = ""
-    if 9 < len(runid) <= 12:
-        dir2 = "0" * (12 - len(runid)) + runid[-(len(runid) - 9):] + "/"
-    dirs = f"{runid[:6]}/{dir2}{runid}/"
-    return f"{dirs}{p_file}", f"{dirs}{up_file}", p_file, up_file
-
 def get_ftp_paths(runid):
-    p_route, up_route, _, _ = get_fastq_routes(runid)
+    p_route, up_route, _, _ = helpers.get_fastq_routes(runid)
     return f"ftp://ftp.sra.ebi.ac.uk/vol1/fastq/{p_route}", f"ftp://ftp.sra.ebi.ac.uk/vol1/fastq/{up_route}"
 
 def run_bash_command(runid, cmd):
@@ -66,7 +56,7 @@ def dl_fastq(runid):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
     Returns tuple of runtime of ascp download, string of library layout,
     and filename of the downloaded fastq."""
-    p_route, up_route, p_file, up_file = get_fastq_routes(runid)
+    p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
     f"{runid}_1.fastq.gz", f"{runid}.fastq.gz"
     out_path = f"{DATA_PATH}/download/fastq-tmp/"
     runtime, _ = ascp_transfer(route=p_route, out_path=out_path)

@@ -39,10 +39,10 @@ def species_progress(spe):
     progress_log_dir = f"{DATA_PATH}/download/logs/progress"
     progress_logs = [file for file in os.listdir(progress_log_dir) if spe in file]
     if progress_logs:
-        latest_log = progress_logs.sort()[-1]
-        progress_df = pd.read_csv(latest_log) # CHECK
-        completed = progress_df.loc[progress_df['status'] == 'completed']
-        incomplete = progress_df.loc[progress_df['status'] == 'incomplete']
+        latest_log = sorted(progress_logs)[-1]
+        progress_df = pd.read_csv(f"{progress_log_dir}/{latest_log}", sep='\t')
+        completed = progress_df.loc[progress_df['status'] == 'completed']['runid']
+        incomplete = progress_df.loc[progress_df['status'] == 'incomplete']['runid']
     else:
         runs_df = helpers.read_runtable(spe)
         incomplete = runs_df['Run']
@@ -51,7 +51,7 @@ def species_progress(spe):
 
 def kallisto_processed(runid):
     """Check if runid has been successfully processed by kallisto, i.e. kallisto output present for runids"""
-    run_info_path = f"{DATA_PATH}/kallisto-tmp/{runid}/run_info.json"
+    run_info_path = f"{DATA_PATH}/download/kallisto-tmp/{runid}/run_info.json"
     if os.path.exists(run_info_path):
         return not '"n_processed": 0' in open(run_info_path,'r').read()
     return False
@@ -67,10 +67,11 @@ def sweep(runid):
     """If kallisto output present,
     move RunID kallisto file to kallisto-tmp, arranged in ENA dir structure;
     delete fastq from fastq-tmp, if applicable."""
-    tmp_dir = f"{DATA_PATH}/kallisto-tmp/{runid}/"
-    target_dir = f"{DATA_PATH}/kallisto-out/{build_route(runid)}"
+    tmp_dir = f"{DATA_PATH}/download/kallisto-tmp/{runid}/"
+    target_dir = f"{DATA_PATH}/download/kallisto-out/{build_route(runid)}"
     os.makedirs(target_dir, exist_ok=True)
     _ = shutil.move(tmp_dir, target_dir)
+    os.remove(runid)
 
 def validate_latest_batch(spe):
     completed, incomplete = species_progress(spe)
@@ -79,7 +80,6 @@ def validate_latest_batch(spe):
             sweep(runid)
             completed.append(runid)
             incomplete.remove(runid)
-    pdb.set_trace()
     # write new log
     log_path = helpers.initiate_logfile('progress', ['runid', 'status'], spe=f"{spe}-")
     for runid in completed:
