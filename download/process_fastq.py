@@ -16,20 +16,14 @@ import os
 import time
 import pdb
 # Relative imports of CONSTANTS in config/constants.py
-from config.constants import *
+from config.constants import DATA_PATH, ASPERA_SSH_KEY
+from helpers import get_timestamp, write_log
 
 def initiate_logfile(log_type, headers, spe=''):
     log_path = f"{DATA_PATH}/download/logs/{log_type}/{get_timestamp()}-{spe}{log_type}.log"
     with open(log_path, 'w') as f:
         f.write('\t'.join(headers) + '\n')
     return log_path
-
-def write_log(to_write, log_path):
-    with open(log_path, 'a') as f:
-        f.write(to_write)
-
-def get_timestamp():
-    return dt.datetime.now().strftime('%Y%m%d-%H%M%S')
 
 def get_fastq_routes(runid):
     """Returns tuple of trailing path of fastq file in vol1/fastq/ server's directory, for paired and unpaired libraries,
