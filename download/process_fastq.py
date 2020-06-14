@@ -57,7 +57,6 @@ def dl_fastq(runid):
     Returns tuple of runtime of ascp download, string of library layout,
     and filename of the downloaded fastq."""
     p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
-    f"{runid}_1.fastq.gz", f"{runid}.fastq.gz"
     out_path = f"{DATA_PATH}/download/fastq-tmp/"
     runtime, _ = ascp_transfer(route=p_route, out_path=out_path)
     if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{p_file}"):

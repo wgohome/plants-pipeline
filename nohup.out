@@ -1,0 +1,55 @@
+
+Session Stop  (Error: Server aborted session: No such file or directory)
+
+Session Stop  (Error: Server aborted session: No such file or directory)
+
+Session Stop  (Error: Server aborted session: No such file or directory)
+
+Session Stop  (Error: No such file or directory)
+
+Session Stop  (Error: Server aborted session handshake, Unable to receive a valid stop message (pmtu-brtt))
+Completed: 976563K bytes transferred in 312 seconds
+ (25587K bits/sec), in 1 file.
+
+[quant] fragment length distribution is truncated gaussian with mean = 200, sd = 20
+[index] k-mer length: 31
+[index] number of targets: 27,416
+[index] number of k-mers: 31,977,016
+[index] number of equivalence classes: 35,220
+[quant] running in single-end mode
+[quant] will process file 1: /home/data1/will_data/pipeline-data/download/fastq-tmp/SRR8083863_1.fastq.gz
+[quant] finding pseudoalignments for the reads ...Completed: 976563K bytes transferred in 301 seconds
+ (26563K bits/sec), in 1 file.
+
+[quant] fragment length distribution is truncated gaussian with mean = 200, sd = 20
+[index] k-mer length: 31
+[index] number of targets: 27,416
+[index] number of k-mers: 31,977,016
+Completed: 976562K bytes transferred in 316 seconds
+ (25310K bits/sec), in 1 file.
+
+[quant] fragment length distribution is truncated gaussian with mean = 200, sd = 20
+[index] k-mer length: 31
+[index] number of targets: 27,416
+[index] number of k-mers: 31,977,016
+[index] number of equivalence classes: 35,220
+[quant] running in single-end mode
+[quant] will process file 1: /home/data1/will_data/pipeline-data/download/fastq-tmp/SRR7812627.fastq.gz
+[quant] finding pseudoalignments for the reads ...[index] number of equivalence classes: 35,220
+[quant] running in single-end mode
+[quant] will process file 1: /home/data1/will_data/pipeline-data/download/fastq-tmp/SRR7725535_1.fastq.gz
+[quant] finding pseudoalignments for the reads ... done
+[quant] processed 12,598,215 reads, 11,144,148 reads pseudoaligned
+[   em] quantifying the abundances ... done
+[   em] the Expectation-Maximization algorithm ran for 450 rounds
+
+ done
+[quant] processed 26,170,831 reads, 299 reads pseudoaligned
+[   em] quantifying the abundances ... done
+[   em] the Expectation-Maximization algorithm ran for 52 rounds
+
+ done
+[quant] processed 12,880,490 reads, 10,171,984 reads pseudoaligned
+[   em] quantifying the abundances ... done
+[   em] the Expectation-Maximization algorithm ran for 513 rounds
+

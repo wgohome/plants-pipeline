@@ -47,7 +47,7 @@ else:
 
 # TODO: Make it robust to SRA inconsistent header names
 runs_df = helpers.read_runtable(spe, runtable_path)
-runids = runs_df['Run'].iloc[::300][:5]
+runids = runs_df['Run'].iloc[::300]
 
 if __name__ == '__main__':
     if not os.path.exists(idx_path):
