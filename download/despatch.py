@@ -37,7 +37,9 @@ idx_path = f"{DATA_PATH}/download/idx/{spe}.idx"
 runtable_path = helpers.build_runtable_path(spe)
 download_method = args.download_method[0].lower()
 linearmode = args.linearmode
+
 assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/out/sra-runtables."
+
 if download_method == 'ascp':
     curl_stream = False
 elif download_method == 'curl':
@@ -47,14 +49,9 @@ else:
 
 # TODO: Make it robust to SRA inconsistent header names
 runs_df = helpers.read_runtable(spe, runtable_path)
-runids = runs_df['Run'].iloc[::300]
+runids = runs_df['Run'].iloc[::300][:10]
 
 if __name__ == '__main__':
     if not os.path.exists(idx_path):
-        runtime, exit_code = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
-    if linearmode:
-        # linear download
-        linear.process_batch(runids, idx_path, spe, curl_stream=curl_stream)
-    else:
-        # parallel download
-        proc.process_batch(runids, idx_path, spe, curl_stream=curl_stream)
+        runtime, exit_code, _ = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
+    linear.process_batch(runids, idx_path, spe, curl=curl_stream, linear=linearmode)
