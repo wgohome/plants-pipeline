@@ -47,7 +47,7 @@ def wrap_sh_command(cmd, bash=False):
         return runtime, exit_code, cmd.format(**kwargs)
     return sh_function
 
-ascp_transfer = wrap_sh_command("ascp -QT -l 300m -P33001 -@ 0:1000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
+ascp_transfer = wrap_sh_command("ascp -QT -l 300m -P33001 -@ 0:1000000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = wrap_sh_command("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
 kallisto_index = wrap_sh_command("kallisto index -i {idx_path} {cds_path}")
 kallisto_quant_curl = wrap_sh_command("kallisto quant -i {idx_path} -o {out_dir} --single -l 200 -s 20 -t 2 <(curl -L -r 0-1000000000 -m 600 --speed-limit 1000000 --speed-time 30 '{ftp_path}' 2> '{DATA_PATH}/download/kallisto-tmp/{runid}.log')", bash=True)

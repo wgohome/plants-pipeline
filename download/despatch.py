@@ -15,9 +15,8 @@ import pandas as pd
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
+from download_functions import process_batch, kallisto_index
 import helpers
-import process_fastq as proc
-import linear_download as linear
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
 parser.add_argument('-s', '--species', nargs=1, metavar='species_alias',
@@ -49,9 +48,11 @@ else:
 
 # TODO: Make it robust to SRA inconsistent header names
 runs_df = helpers.read_runtable(spe, runtable_path)
-runids = runs_df['Run'].iloc[::300][:10]
+runids = runs_df['Run'].iloc[::300]
 
 if __name__ == '__main__':
+    # Create index file for species if not present
     if not os.path.exists(idx_path):
-        runtime, exit_code, _ = proc.kallisto_index(idx_path=idx_path, cds_path=cds_path)
-    linear.process_batch(runids, idx_path, spe, curl=curl_stream, linear=linearmode)
+        runtime, exit_code, _ = kallisto_index(idx_path=idx_path, cds_path=cds_path)
+    # Run the batch
+    process_batch(runids, idx_path, spe, curl=curl_stream, linear=linearmode)
