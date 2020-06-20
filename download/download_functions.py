@@ -52,29 +52,31 @@ kallisto_quant = wrap_sh_command("kallisto quant -i '{idx_path}' -t 2 -o '{out_d
 kallisto_index = wrap_sh_command("kallisto index -i {idx_path} {cds_path}")
 kallisto_quant_curl = wrap_sh_command("kallisto quant -i {idx_path} -o {out_dir} --single -l 200 -s 20 -t 2 <(curl -L -r 0-1000000000 -m 600 --speed-limit 1000000 --speed-time 30 '{ftp_path}' 2> '{DATA_PATH}/download/kallisto-tmp/{runid}.log')", bash=True)
 
-def dl_fastq(runid):
+def dl_fastq(runid, layout):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
     Returns tuple of runtime of ascp download, string of library layout,
     and filename of the downloaded fastq."""
     p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
     f"{runid}_1.fastq.gz", f"{runid}.fastq.gz"
     out_path = f"{DATA_PATH}/download/fastq-tmp/"
-    runtime, _, cmd = ascp_transfer(route=p_route, out_path=out_path)
-    if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{p_file}"):
-        return runtime, 'paired', p_file, cmd
-    runtime, _, cmd = ascp_transfer(route=up_route, out_path=out_path)
-    if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{up_file}"):
-        return runtime, 'unpaired', up_file, cmd
+    if layout.upper() == 'PAIRED':
+        runtime, _, cmd = ascp_transfer(route=p_route, out_path=out_path)
+        if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{p_file}"):
+            return runtime, 'paired', p_file, cmd
+    else:
+        runtime, _, cmd = ascp_transfer(route=up_route, out_path=out_path)
+        if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{up_file}"):
+            return runtime, 'unpaired', up_file, cmd
     return runtime, 'failed', '', cmd
 
-def ascp_job(runid, idx_path, init_log_path, runtime_log_path):
+def ascp_job(runid, layout, idx_path, init_log_path, runtime_log_path):
     """One of two download modes to choose from.
     Downloads fastq file, quantify with kallisto and
     returns runid, ascp_runtime, kal_runtime, run_layout.
     Writes initiation time for this runid in init_log_path and
     write runtimes and layout in runtime_log_path"""
     helpers.write_log(f"{helpers.get_timestamp()}\t{runid}\n", init_log_path)
-    ascp_runtime, layout, filename, ascp_cmd = dl_fastq(runid)
+    ascp_runtime, layout, filename, ascp_cmd = dl_fastq(runid, layout)
     if layout == 'failed':
         kal_runtime = 0
     else:
@@ -105,7 +107,7 @@ def check_zero_processed(runid):
     run_info_path = f"{DATA_PATH}/download/kallisto-tmp/{runid}/run_info.json"
     return '"n_processed": 0' in open(run_info_path,'r').read()
 
-def curl_job(runid, idx_path, init_log_path, runtime_log_path):
+def curl_job(runid, layout, idx_path, init_log_path, runtime_log_path):
     """One of two download modes to choose from.
     Streams fastq with curl and directly pass to kallisto quant.
     Bypasses downloading of fastq."""
@@ -113,8 +115,9 @@ def curl_job(runid, idx_path, init_log_path, runtime_log_path):
     p_ftp_path, up_ftp_path = get_ftp_paths(runid)
     out_dir = f"{DATA_PATH}/download/kallisto-tmp/{runid}/"
     os.makedirs(out_dir, exist_ok=True)
-    runtime, _, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=p_ftp_path)
-    if not check_zero_processed(runid):
+    if layout.upper() == 'PAIRED':
+        runtime, _, _ = kallisto_quant_curl(runid=runid, idx_path=idx_path, out_dir=out_dir, ftp_path=p_ftp_path)
+        # if not check_zero_processed(runid):
         error_type = check_error_type(runid)
         if error_type == 'no_download_error':
             fields = [helpers.get_timestamp(), runid, str(runtime), 'paired', p_ftp_path]
@@ -132,27 +135,27 @@ def curl_job(runid, idx_path, init_log_path, runtime_log_path):
     helpers.write_log('\t'.join(fields) + '\n', runtime_log_path)
     return fields
 
-def parallel_loop(job_fn, runids, idx_path, init_log_path, runtime_log_path):
+def parallel_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path):
     """One of two loop functions to choose from.
     Executes job_fn on each elements in runids in parallel.
     Returns a list of the return values of job_fn."""
     with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
-        futures = [executor.submit(job_fn, runid, idx_path, init_log_path, runtime_log_path) for runid in runids]
+        futures = [executor.submit(job_fn, runid, layout, idx_path, init_log_path, runtime_log_path) for runid, layout in zip(runids, layouts)]
     results = []
     for f in concurrent.futures.as_completed(futures):
         results.append(f.result())
     return results
 
-def linear_loop(job_fn, runids, idx_path, init_log_path, runtime_log_path):
+def linear_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path):
     """One of two loop functions to choose from.
     Executes job_fn on each elements in runids linearly.
     Returns a list of the return values of job_fn."""
     results = []
-    for runid in runids:
-        results.append(job_fn(runid, idx_path, init_log_path, runtime_log_path))
+    for runid, layout in zip(runids, layouts)
+        results.append(job_fn(runid, layout, idx_path, init_log_path, runtime_log_path))
     return results
 
-def process_batch(runids, idx_path, spe, curl=False, linear=False):
+def process_batch(runids, layouts, idx_path, spe, curl=False, linear=False):
     init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
     runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
     batch_start = time.time()
@@ -160,7 +163,7 @@ def process_batch(runids, idx_path, spe, curl=False, linear=False):
     loop_fn = linear_loop if linear else parallel_loop
     job_mode = curl_job if curl else ascp_job
     # Run the loop_fn in job_mode and pass other required parameters
-    results = loop_fn(job_mode, runids, idx_path, init_log_path, runtime_log_path)
+    results = loop_fn(job_mode, runids, layouts, idx_path, init_log_path, runtime_log_path)
     batch_runtime = round(time.time() - batch_start, 2)
     helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 
