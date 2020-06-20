@@ -151,7 +151,7 @@ def linear_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_pa
     Executes job_fn on each elements in runids linearly.
     Returns a list of the return values of job_fn."""
     results = []
-    for runid, layout in zip(runids, layouts)
+    for runid, layout in zip(runids, layouts):
         results.append(job_fn(runid, layout, idx_path, init_log_path, runtime_log_path))
     return results
 
