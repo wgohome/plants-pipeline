@@ -36,7 +36,7 @@ def read_runtable(spe, runtable_path=None):
     if runtable_path == None:
         runtable_path = build_runtable_path(spe)
     return pd.read_csv(runtable_path, sep=',', header=0, index_col=False,
-        dtype='string', usecols=['Run', 'Bytes'])
+        dtype='string', usecols=['Run', 'Bytes', 'LibraryLayout'])
 
 def get_fastq_routes(runid):
     """Returns tuple of trailing path of fastq file in vol1/fastq/ server's directory, for paired and unpaired libraries,

@@ -47,12 +47,13 @@ else:
     raise Exception("-method specified is invalid. Only accepts 'ascp' or 'curl'")
 
 # TODO: Make it robust to SRA inconsistent header names
-runs_df = helpers.read_runtable(spe, runtable_path)
-runids = runs_df['Run'].iloc[::300]
+runs_df = helpers.read_runtable(spe, runtable_path).iloc[::300]
+runids = runs_df['Run']
+layouts = runs_df['LibraryLayout']
 
 if __name__ == '__main__':
     # Create index file for species if not present
     if not os.path.exists(idx_path):
         runtime, exit_code, _ = kallisto_index(idx_path=idx_path, cds_path=cds_path)
     # Run the batch
-    process_batch(runids, idx_path, spe, curl=curl_stream, linear=linearmode)
+    process_batch(runids, layouts, idx_path, spe, curl=curl_stream, linear=linearmode)
