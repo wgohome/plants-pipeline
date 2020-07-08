@@ -5,7 +5,7 @@ import re
 
 if __name__ == '__main__':
     abspath = realpath(dirname(__file__))
-    parent_module = re.search('^(.*pipeline)', abspath).group()
+    parent_module = re.search('^(.*plants-pipeline)', abspath).group()
     sys.path.insert(0, parent_module)
 
 ################################################################################
@@ -17,8 +17,8 @@ import numpy as np
 from functools import reduce
 import pdb
 # Relative imports
-from datasource.po import po_terms, infl, po, get_term
-from dataprocess import iohelper
+from preprocess.datasource.po import po_terms, infl, po, get_term
+from preprocess.dataprocess import iohelper
 
 def annotate(df, species, study, db='ena'):
     global HEADERS

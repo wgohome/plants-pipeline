@@ -5,7 +5,7 @@ import re
 
 if __name__ == '__main__':
     abspath = realpath(dirname(__file__))
-    parent_module = re.search('^(.*pipeline)', abspath).group()
+    parent_module = re.search('^(.*plants-pipeline)', abspath).group()
     sys.path.insert(0, parent_module)
 
 ################################################################################
@@ -35,15 +35,14 @@ from selenium.webdriver.chrome.options import Options
 import warnings
 import pdb
 # Relative imports
-from dataprocess import iohelper
+from config.constants import DATA_PATH
+from preprocess.dataprocess import iohelper
 
 # CONSTANTS
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + '/'
 CHROMEDRIVER_PATH = "/Users/wirriamm/chromedriver"
 SRA_WAITING_ROOM_PATH = f"{BASE_PATH}dlwaitingroom/"
-OUT_PATH = re.search('^(.*plentyplants)', BASE_PATH).group() +\
-              "/data/{study}/out/sra_runtables/"
-    # NOTE: study to be formatted in main.py
+OUT_PATH = f"{DATA_PATH}/preprocess/out/sra_runtables/"
 
 # Local variables
 default_attributes = {}
