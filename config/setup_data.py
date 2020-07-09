@@ -22,10 +22,10 @@ dests = {
         'logs/progress'
     ],
     'preprocess': [
-        'out/ena-runtables',
-        'out/sra-runtables',
-        'out/ena-annotations',
-        'out/sra-annotations'
+        'ena-runtables',
+        'sra-runtables',
+        'ena-annotations',
+        'sra-annotations'
     ],
     'postprocess': [
         ''

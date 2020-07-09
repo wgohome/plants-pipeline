@@ -26,3 +26,6 @@ PATH=`pwd`/dependencies/kallisto:$PATH
 PATH=~/Applications/Aspera\ CLI/bin:$PATH # Specific path to mac
 export $PATH
 echo "\$PATH exported, 'kallisto' and 'ascp' can be called from the CLI"
+
+# Install chromedriver via brew if not already installed
+brew cask info chromedriver || brew cask install chromedriver
