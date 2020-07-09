@@ -14,7 +14,7 @@ def create_annotation_file(species, study, db):
     db = db.lower()
     Spe = species_shortform(species)
     abspath = realpath(dirname(__file__))
-    parent_module = re.search('^(.*pipeline)', abspath).group()
+    parent_module = re.search('^(.*plants-pipeline)', abspath).group()
     out_path = f"{dirname(parent_module)}/data/{study}/out/{db}_annotations/{Spe}_{db}_annotation.txt"
     with open(out_path, 'w') as f:
         f.write("")

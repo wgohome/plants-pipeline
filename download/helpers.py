@@ -30,7 +30,7 @@ def write_log(to_write, log_path):
         f.write(to_write)
 
 def build_runtable_path(spe):
-    return f"{DATA_PATH}/preprocess/out/sra-runtables/{spe}_sra_runtable.txt"
+    return f"{DATA_PATH}/preprocess/sra-runtables/{spe}_sra_runtable.txt"
 
 def read_runtable(spe, runtable_path=None):
     if runtable_path == None:

@@ -5,7 +5,7 @@ import re
 
 if __name__ == '__main__':
     abspath = realpath(dirname(__file__))
-    parent_module = re.search('^(.*plants-pipeline)', abspath).group()
+    parent_module = re.search('^(.*pipeline)', abspath).group()
     sys.path.insert(0, parent_module)
 
 ################################################################################
@@ -37,12 +37,13 @@ import pdb
 # Relative imports
 from config.constants import DATA_PATH
 from preprocess.dataprocess import iohelper
+from preprocess.datasource import ena
 
 # CONSTANTS
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + '/'
 CHROMEDRIVER_PATH = "/Users/wirriamm/chromedriver"
 SRA_WAITING_ROOM_PATH = f"{BASE_PATH}dlwaitingroom/"
-OUT_PATH = f"{DATA_PATH}/preprocess/out/sra_runtables/"
+OUT_PATH = f"{DATA_PATH}/preprocess/sra-runtables/"
 
 # Local variables
 default_attributes = {}
@@ -89,20 +90,20 @@ def make_sra_query(tax_id, species, query_attributes=default_attributes):
     return webenv
 
 def dl_sra_runtable(tax_id, species, webenv):
-    dl_path = os.path.dirname(os.path.realpath(__file__))
-    webenv = make_sra_query(tax_id, species)
+    # dl_path = os.path.dirname(os.path.realpath(__file__))
+    # webenv = make_sra_query(tax_id, species)
     urlRunSelector = f"https://www.ncbi.nlm.nih.gov/Traces/study/?query_key=1&WebEnv={webenv}"
     runtable_path = download_from_webpage(species, urlRunSelector)
     return runtable_path
 
 def download_from_webpage(species, urlRunSelector):
     opts = Options()
-    # opts.add_argument('--headless')
+    opts.add_argument('headless')
     # opts.add_argument('--window-size=1920x1080')
     # assert opts.headless
     prefs = {'download.default_directory': SRA_WAITING_ROOM_PATH}
     opts.add_experimental_option('prefs', prefs)
-    browser = Chrome(options=opts, executable_path=CHROMEDRIVER_PATH)
+    browser = Chrome(options=opts, executable_path='chromedriver')
     browser.get(urlRunSelector)
     button = check_page_load(browser)
     button.click()
