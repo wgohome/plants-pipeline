@@ -14,8 +14,8 @@ import os
 import re
 import requests
 # local imports
-from .ontology import Ontology
-from .term import Term
+from preprocess.po_parser.ontology import Ontology
+from preprocess.po_parser.term import Term
 
 url = "https://raw.githubusercontent.com/Planteome/plant-ontology/master/po.obo"
 po_obo_path = f"{parent_module}/dependencies/po.obo"

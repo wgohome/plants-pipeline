@@ -2,7 +2,7 @@ from itertools import cycle
 import networkx as nx
 import re
 # local imports
-from .term import Term
+from preprocess.po_parser.term import Term
 
 class Ontology():
     def __init__(self, string):
@@ -10,6 +10,8 @@ class Ontology():
         self.id_hash = {} # To optimize term look-ups
         self.name_hash = {} # To optimize term look-ups
         for match in self.find_matches_in_string(string):
+            if ('is_obsolete: true' in match) or ('namespace: plant_anatomy' not in match):
+                continue # Exclude obsolote terms & dev stages
             term = Term(self, match)
             self.terms.append(term)
             self.id_hash[term.id[0]] = term # For faster lookup
@@ -48,10 +50,11 @@ class Ontology():
         # Add edges based on parents of each term, related by is_a
         for term in self.terms:
             graph.add_edges_from([*zip(cycle([term]),term.parents)], relation='is_a')
+            graph.add_edges_from([*zip(term.children, cycle([term]))], relation='is_a')
         return graph
 
     def simple_paths(self, source, target):
-        """Returns list of all possible paths (as list of Terms) form source to target."""
+        """Returns list of all possible paths (as list of Terms) form source to target(more parent than source)."""
         # Set target as 'Plant Anatomical Entity' to find the paths all the way to the top
         paths = nx.all_simple_paths(
             self.graph,
@@ -63,3 +66,27 @@ class Ontology():
     def print_simple_paths(self, source, target):
         for path in self.simple_paths(source, target):
             print('•', ' ➔ '.join(term.name[0] for term in path))
+
+    def which_parent(self, term1, term2):
+        """Return the term which is the parent of the other
+        If both terms are siblings, return None."""
+        simple_path1 = [*po.simple_paths(term1, term2)]
+        simple_path2 = [*po.simple_paths(term2, term1)]
+        if (simple_path1 == []) and (simple_path2 == []):
+            return None # ??
+        elif (simple_path1 != []):
+            return term2
+        else:
+            return term1
+
+    def which_child(self, term1, term2):
+        """Return the term which is the child of the other.
+        If both terms are siblings, return None."""
+        simple_path1 = [*po.simple_paths(term1, term2)]
+        simple_path2 = [*po.simple_paths(term2, term1)]
+        if (simple_path1 == []) and (simple_path2 == []):
+            return None # ??
+        elif (simple_path1 != []):
+            return term1
+        else:
+            return term2

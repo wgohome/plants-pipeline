@@ -14,25 +14,27 @@ if __name__ == '__main__':
 import re
 import pandas as pd
 import numpy as np
+import inflect
 from functools import reduce
 import pdb
 # Relative imports
-# po_parser = __import__('po-parser.po')
 from preprocess.po_parser.po import po # po is an Ontology class instance
 from preprocess import iohelper
 
-def annotate(df, species, study, db='ena'):
+# Constants
+INFL = inflect.engine() # For pluralization
+
+def annotate(df, species, db='ena'):
+    # species refer to full species name
     global HEADERS
     HEADERS = df.columns.tolist()
-    out_path = iohelper.create_annotation_file(species, study, db)
+    out_path = iohelper.create_annotation_file(species, db)
     cols1, cols2, cols3 = get_cols(db) # cols4 will be the remaining columns
     for index, series in df.iterrows():
-        # matches = collect_matches(series, cols1, cols2, cols3)
-        # po_names = [term.name for term in matches]
         match = collect_matches(series, cols1, cols2, cols3)
         index = series.run_accession if db == 'ena' else series.Run
         # to_write = index + '\t' + '\t'.join(po_names) + '\n'
-        po_name = match.name if match != "" else ""
+        po_name = match.name[0] if match != "" else ""
         to_write = f"{index}\t{po_name}\n"
         iohelper.write_annotation(to_write, out_path)
 
@@ -91,52 +93,67 @@ def validate_col(col, series):
 
 def find_matches(query):
     # Match a single query (in a cell) against all PO terms
+    # Choose the most specific term that matches this entry
     matches = []
     if pd.isnull(query):
         return matches
     query = query.lower()
-    for term in po_terms:
-        po_name = re.sub(r"(?i)\s*plant\s*", " ", term.name).strip().lower()
+    for term in po.terms:
+        po_name = re.sub(r"(?i)\s*plant\s*", " ", term.name[0]).strip().lower()
         regex = re.compile(rf"\b{po_name}\b", re.I)
-        regex_plural = re.compile(rf"\b{infl.plural(po_name)}\b", re.I)
+        regex_plural = re.compile(rf"\b{INFL.plural(po_name)}\b", re.I)
         match = re.findall(regex, query)
         match_plural = re.findall(regex_plural, query)
         if match or match_plural:
             matches.append(term)
     if matches:
-        return choose_more_specific_term(matches)
+        return choose_most_specific_term(matches)
     else:
         return None
 
-def choose_more_specific_term(matches):
-    path_length = lambda match: len([*match.superclasses()])
-    matches.sort(key=path_length, reverse=True)
-    return matches[0]
+def choose_most_specific_term(matches):
+    """Return most specific term out of matches"""
+    path_length = lambda path: len(path)
+    # Take longest path of match term to represent the specificity of that term
+    longest_path = lambda match: sorted([*match.superclasses()], key=path_length)[-1]
+    # Take match term with the longest representaive path
+    most_specific_term = lambda match: len(longest_path(match))
+    return sorted(matches, key=most_specific_term)[-1]
 
-def find_best_match(matches):
-    # Find the nodes closest to the leaf nodes.
-    # If there are matches from different lines, choose the common last node.
-    if matches == []: # reduce() cannot take an empty iterable as argument
-        return ""
-    matches_treepaths = [find_parents(match) for match in matches]
-    best_common_treepath = reduce(compare_treepath, matches_treepaths)
-    return best_common_treepath[-1] if best_common_treepath else ""
+def choose_least_specific_term(matches):
+    path_length = lambda path: len(path)
+    # Take longest path of match term to represent the specificity of that term
+    longest_path = lambda match: sorted([*match.superclasses()], key=path_length)[0]
+    # Take match term with the longest representaive path
+    most_specific_term = lambda match: len(longest_path(match))
+    return sorted(matches, key=most_specific_term)[0]
 
-def find_parents(match):
-    treepath = [*match.superclasses()]
-    treepath.reverse()
-    return treepath
+find_best_match = choose_least_specific_term
 
-def compare_treepath(path1, path2):
-    merged_treepath = []
-    for node1, node2 in zip(path1, path2):
-        if node1 == node2:
-            merged_treepath.append(node1)
-        else:
-            break
-    else:
-        # Only exceuted if break is not triggered, i.e. path1, path2 ⊆ same path
-        # Returns the more specific between path1 and path2
-        return path1 if (len(path1) > len(path2)) else path2
-    # path1 and path2 are separate paths, truncate up to the last common node
-    return merged_treepath
+# def find_best_match(matches):
+#     # Find the nodes closest to the leaf nodes.
+#     # If there are matches from different lines, choose the common last node.
+#     if matches == []: # reduce() cannot take an empty iterable as argument
+#         return ""
+#     matches_treepaths = [find_parents(match) for match in matches]
+#     best_common_treepath = reduce(compare_treepath, matches_treepaths)
+#     return best_common_treepath[-1] if best_common_treepath else ""
+
+# def find_parents(match):
+#     treepath = [*match.superclasses()]
+#     treepath.reverse()
+#     return treepath
+
+# def compare_treepath(path1, path2):
+#     merged_treepath = []
+#     for node1, node2 in zip(path1, path2):
+#         if node1 == node2:
+#             merged_treepath.append(node1)
+#         else:
+#             break
+#     else:
+#         # Only exceuted if break is not triggered, i.e. path1, path2 ⊆ same path
+#         # Returns the more specific between path1 and path2
+#         return path1 if (len(path1) > len(path2)) else path2
+#     # path1 and path2 are separate paths, truncate up to the last common node
+#     return merged_treepath

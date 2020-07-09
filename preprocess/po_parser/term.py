@@ -2,7 +2,7 @@ from collections import defaultdict
 import networkx as nx
 import re
 # local imports
-from .relation import Relation
+from preprocess.po_parser.relation import Relation
 
 class Term():
     def __init__(self, ontology, string):
@@ -45,10 +45,9 @@ class Term():
 
     def subclasses(self):
         full_paths = []
-        paths = [[child] for child in self.children]
+        paths = [[self, child] for child in self.children]
         while paths != []:
             for path in paths:
-                # pdb.set_trace()
                 paths.remove(path)
                 result, leaf = self.expand_path(path)
                 if leaf:

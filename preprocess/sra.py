@@ -36,8 +36,8 @@ import warnings
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
-from preprocess.dataprocess import iohelper
-from preprocess.datasource import ena
+from preprocess import iohelper
+from preprocess import ena
 
 # CONSTANTS
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + '/'

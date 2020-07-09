@@ -13,10 +13,10 @@ if __name__ == '__main__':
 # Local imports
 from config.constants import DATA_PATH
 
-def create_annotation_file(species, study, db):
+def create_annotation_file(species, db):
     db = db.lower()
     Spe = species_shortform(species)
-    out_path = f"{DATA_PATH}/{db}_annotations/{Spe}_{db}_annotation.txt"
+    out_path = f"{DATA_PATH}/preprocess/{db}-annotations/{Spe}_{db}_annotation.txt"
     with open(out_path, 'w') as f:
         f.write("")
     return out_path
