@@ -22,7 +22,7 @@ Options: (stored as an attributes dict)
 - output format
 
 Hardcoded:
-- Query filters
+- Query filters as `deafult_attributes`
 - Query to portal endpoint instead of browser endpoint
     (browser will download the data as xml)
 """

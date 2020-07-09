@@ -41,14 +41,22 @@ from preprocess.datasource import ena
 
 # CONSTANTS
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + '/'
-CHROMEDRIVER_PATH = "/Users/wirriamm/chromedriver"
-SRA_WAITING_ROOM_PATH = f"{BASE_PATH}dlwaitingroom/"
+SRA_WAITING_ROOM_PATH = f"{BASE_PATH}dlwaitingroom/" # Waiting room as default dir for chrome to download to, before moved to OUT_PATH
 OUT_PATH = f"{DATA_PATH}/preprocess/sra-runtables/"
 
 # Local variables
 default_attributes = {}
 
 # Exported functions
+"""
+Usage notes:
+1. get_sra_runtable => Make sra query based on filters, download runtable csv
+2. read_sra_runtable => Read runtable csv into pd df
+3. process_sra_runtable => Both step 1 and 2 together, returning the pd df
+* tax_id can be obtained with `ena.get_taxanomic_id('Genus species')`
+"""
+get_taxanomic_id = ena.get_taxanomic_id
+
 def process_sra_runtable(tax_id, species, query_attributes=default_attributes):
     runtable_path = get_sra_runtable(tax_id, species, query_attributes)
     if runtable_path == None:
@@ -66,13 +74,6 @@ def get_sra_runtable(tax_id, species, query_attributes=default_attributes):
 def read_sra_runtable(runtable_path, query_attributes=default_attributes):
     sra_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False, dtype='string')
     return sra_df
-
-"""
-Usage notes:
-1. get_sra_runtable => Make sra query based on filters, download runtable csv
-2. read_sra_runtable => Read runtable csv into pd df
-3. process_sra_runtable => Both step 1 and 2 together, returning the pd df
-"""
 
 # Local functions
 def make_sra_query(tax_id, species, query_attributes=default_attributes):
@@ -127,7 +128,6 @@ def check_download_status(species):
     # Rename file after download is complete, move file to out/sra_runtables
     dirs = []
     attempt = 0
-    # dirs = sorted(dirs, key=os.path.getctime, reverse=True)
     while not len(dirs):
         time.sleep(5)
         dirs = [dir for dir in os.listdir(SRA_WAITING_ROOM_PATH) if dir[-4:] == '.txt'] # Check that download is complete
@@ -146,4 +146,4 @@ def move_downloaded_file(species, dirs):
     shutil.move(new_name, target_path) # change target to full path instead of dir path to allow overwrite
     return target_path
 
-__all__ = ['get_sra_runtable', 'read_sra_runtable', 'process_sra_runtable']
+__all__ = ['get_sra_runtable', 'read_sra_runtable', 'process_sra_runtable', 'get_taxanomic_id']

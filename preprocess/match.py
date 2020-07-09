@@ -17,8 +17,9 @@ import numpy as np
 from functools import reduce
 import pdb
 # Relative imports
-from preprocess.datasource.po import po_terms, infl, po, get_term
-from preprocess.dataprocess import iohelper
+# po_parser = __import__('po-parser.po')
+from preprocess.po_parser.po import po # po is an Ontology class instance
+from preprocess import iohelper
 
 def annotate(df, species, study, db='ena'):
     global HEADERS

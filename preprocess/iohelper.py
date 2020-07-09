@@ -10,12 +10,13 @@ if __name__ == '__main__':
 
 ################################################################################
 
+# Local imports
+from config.constants import DATA_PATH
+
 def create_annotation_file(species, study, db):
     db = db.lower()
     Spe = species_shortform(species)
-    abspath = realpath(dirname(__file__))
-    parent_module = re.search('^(.*plants-pipeline)', abspath).group()
-    out_path = f"{dirname(parent_module)}/data/{study}/out/{db}_annotations/{Spe}_{db}_annotation.txt"
+    out_path = f"{DATA_PATH}/{db}_annotations/{Spe}_{db}_annotation.txt"
     with open(out_path, 'w') as f:
         f.write("")
     return out_path
@@ -30,7 +31,7 @@ def get_species_list(path):
     return lines
 
 def species_shortform(species):
-    # Arabidopsis thaliana => Ath
+    '''Arabidopsis thaliana => Ath'''
     return species.split()[0][0] + species.split()[1][0:2]
 
-__all__ = ['write_annotation', 'get_species_list', 'species_shortform']
+__all__ = ['create_annotation_file', 'write_annotation', 'get_species_list', 'species_shortform']
