@@ -5,3 +5,4 @@ dependencies/*
 !dependencies/.gitkeep
 pipeline-data
 local_paths.py
+*nohup*
