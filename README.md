@@ -70,7 +70,7 @@ python download/despatch.py -s Ath -c Ath.cds.fasta -m curl -l
 
 To run the download in the background, instead, run this:
 ```
-nohup python download/despatch.py -i Ath -c Ath.cds.fasta -m ascp &
+nohup python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp &
 ```
 The stdout will be found in the file 'nohup.out'. However, due to multi-processing, the stdout might not make much sense. Instead, the log files can be more informative.
 
