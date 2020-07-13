@@ -37,7 +37,7 @@ runtable_path = helpers.build_runtable_path(spe)
 download_method = args.download_method[0].lower()
 linearmode = args.linearmode
 
-assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/out/sra-runtables."
+assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/sra-runtables."
 
 if download_method == 'ascp':
     curl_stream = False
@@ -54,6 +54,7 @@ layouts = runs_df['LibraryLayout']
 if __name__ == '__main__':
     # Create index file for species if not present
     if not os.path.exists(idx_path):
+        assert os.path.exists(cds_path), f"The CDS for {spe} is not in pipeline-data/download/cds."
         runtime, exit_code, _ = kallisto_index(idx_path=idx_path, cds_path=cds_path)
     # Run the batch
     process_batch(runids, layouts, idx_path, spe, curl=curl_stream, linear=linearmode)

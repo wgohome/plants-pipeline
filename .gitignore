@@ -4,4 +4,5 @@ proj_env
 dependencies/*
 !dependencies/.gitkeep
 data-local
+pipeline-data
 local_paths.py
