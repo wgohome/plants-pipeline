@@ -23,7 +23,7 @@ pip install -r config/requirements.txt
 
 To setup the directories for this project's data repository, run this command, replacing `path/to/data/repository/` with your desired path.
 ```
-python3 cofig/setup_data.py -p /path/to/data/repository/
+python3 config/setup_data.py -p /path/to/data/repository/
 ```
 
 Then, open `config/constants.py` file and edit the `ASPERA_SSH_KEY` and `DATA_PATH` variables accordingly based on your local machine. In general, `ASPERA_SSH_KEY` is located in a standard install path for Mac and another path for Linux.
