@@ -135,18 +135,18 @@ def curl_job(runid, layout, idx_path, init_log_path, runtime_log_path):
     helpers.write_log('\t'.join(fields) + '\n', runtime_log_path)
     return fields
 
-def parallel_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path):
+def parallel_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path, workers=8):
     """One of two loop functions to choose from.
     Executes job_fn on each elements in runids in parallel.
     Returns a list of the return values of job_fn."""
-    with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
         futures = [executor.submit(job_fn, runid, layout, idx_path, init_log_path, runtime_log_path) for runid, layout in zip(runids, layouts)]
     results = []
     for f in concurrent.futures.as_completed(futures):
         results.append(f.result())
     return results
 
-def linear_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path):
+def linear_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path, workers=None): #workers is a dummy var here
     """One of two loop functions to choose from.
     Executes job_fn on each elements in runids linearly.
     Returns a list of the return values of job_fn."""
@@ -155,7 +155,7 @@ def linear_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_pa
         results.append(job_fn(runid, layout, idx_path, init_log_path, runtime_log_path))
     return results
 
-def process_batch(runids, layouts, idx_path, spe, curl=False, linear=False):
+def process_batch(runids, layouts, idx_path, spe, curl=False, linear=False, workers=8):
     init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
     runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
     batch_start = time.time()
@@ -163,7 +163,7 @@ def process_batch(runids, layouts, idx_path, spe, curl=False, linear=False):
     loop_fn = linear_loop if linear else parallel_loop
     job_mode = curl_job if curl else ascp_job
     # Run the loop_fn in job_mode and pass other required parameters
-    results = loop_fn(job_mode, runids, layouts, idx_path, init_log_path, runtime_log_path)
+    results = loop_fn(job_mode, runids, layouts, idx_path, init_log_path, runtime_log_path, workers)
     batch_runtime = round(time.time() - batch_start, 2)
     helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 
