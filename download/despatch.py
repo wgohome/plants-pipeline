@@ -29,6 +29,7 @@ parser.add_argument('-m', '--method', nargs=1, metavar='download_method',
                     help="This script allows for download methods: 'ascp' or 'curl'.",
                     dest='download_method', type=str, required=True)
 parser.add_argument('-l', '--linearmode', action='store_true', default=False, required=False, dest='linearmode', help="Include this optional tag if download is to be in linear mode, else default will be parallel processes.")
+parser.add_argument('-w', '--workers',nargs=1, metavar='num_workers', default=['8'], required=False, dest='workers', help="Optional. Specify the number of workers to spawn for multiple process if `-l` is not chosen. Otherwise, this argument will be ignored..")
 args = parser.parse_args()
 spe = args.spe[0].capitalize()
 cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
@@ -36,6 +37,7 @@ idx_path = f"{DATA_PATH}/download/idx/{spe}.idx"
 runtable_path = helpers.build_runtable_path(spe)
 download_method = args.download_method[0].lower()
 linearmode = args.linearmode
+workers = int(args.workers[0])
 
 assert os.path.exists(runtable_path), f"The runtable for {spe} is not in pipeline-data/preprocess/sra-runtables."
 
@@ -57,4 +59,4 @@ if __name__ == '__main__':
         assert os.path.exists(cds_path), f"The CDS for {spe} is not in pipeline-data/download/cds."
         runtime, exit_code, _ = kallisto_index(idx_path=idx_path, cds_path=cds_path)
     # Run the batch
-    process_batch(runids, layouts, idx_path, spe, curl=curl_stream, linear=linearmode)
+    process_batch(runids, layouts, idx_path, spe, curl=curl_stream, linear=linearmode, workers=workers)
