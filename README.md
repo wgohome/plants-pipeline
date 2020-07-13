@@ -61,10 +61,12 @@ Call the `despatch.py` script with the following arguments.
 - `-c` is for the name (not full path) of the CDS fasta file found in `pipeline-data/download/cds/`. It will be good to set up a convention such as 'Ath.cds.fasta' for the file naming.
 - `-m` if for one of the two download methods: 'ascp' or 'curl'
 - `-l` is an optional tag to indicate if download is to be done linearly. By default, download will be in parallel processes.
+- `-w` is an optional tag to set the number of workers for miltiprocessing. If download is to be done linearly, this argument will be ignored. By default, number of workers is set to 8.
 
-For example:
+For example, some possible commands are:
 ```
 python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp
+python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp -w 4
 python download/despatch.py -s Ath -c Ath.cds.fasta -m curl -l
 ```
 
