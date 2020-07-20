@@ -47,19 +47,26 @@ def wrap_sh_command(cmd, bash=False):
         return runtime, exit_code, cmd.format(**kwargs)
     return sh_function
 
-ascp_transfer = wrap_sh_command("ascp -QT -l 300m -P33001 -@ 0:1000000000 -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
+ascp_transfer = wrap_sh_command("ascp -QT -l 300m -P33001 {ascp_limit_tag} -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = wrap_sh_command("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
 kallisto_index = wrap_sh_command("kallisto index -i {idx_path} {cds_path}")
 kallisto_quant_curl = wrap_sh_command("kallisto quant -i {idx_path} -o {out_dir} --single -l 200 -s 20 -t 2 <(curl -L -r 0-1000000000 -m 600 --speed-limit 1000000 --speed-time 30 '{ftp_path}' 2> '{DATA_PATH}/download/kallisto-tmp/{runid}.log')", bash=True)
 
-def dl_fastq(runid, layout):
+def dl_fastq(runid, layout, filesize):
     """Attempts downloading runid fastq as paired file if possible, unpaired otherwise.
     Returns tuple of runtime of ascp download, string of library layout,
     and filename of the downloaded fastq."""
     p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
     out_path = f"{DATA_PATH}/download/fastq-tmp/"
+    # checkrunid file size
+    if filesize <= 1000000000:
+        ascp_limit_tag = ""
+    else:
+        ascp_limit_tag = "-@ 0:1000000000"
+
     if layout.upper() == 'PAIRED':
-        runtime, _, cmd = ascp_transfer(route=p_route, out_path=out_path)
+        # Add bytes kwarg
+        runtime, _, cmd = ascp_transfer(route=p_route, out_path=out_path, ascp_limit_tag=ascp_limit_tag)
         if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{p_file}"):
             return runtime, 'paired', p_file, cmd
     else:
@@ -68,14 +75,14 @@ def dl_fastq(runid, layout):
             return runtime, 'unpaired', up_file, cmd
     return runtime, 'failed', '', cmd
 
-def ascp_job(runid, layout, idx_path, init_log_path, runtime_log_path):
+def ascp_job(runid, layout, filesize, idx_path, init_log_path, runtime_log_path):
     """One of two download modes to choose from.
     Downloads fastq file, quantify with kallisto and
     returns runid, ascp_runtime, kal_runtime, run_layout.
     Writes initiation time for this runid in init_log_path and
     write runtimes and layout in runtime_log_path"""
     helpers.write_log(f"{helpers.get_timestamp()}\t{runid}\n", init_log_path)
-    ascp_runtime, layout, filename, ascp_cmd = dl_fastq(runid, layout)
+    ascp_runtime, layout, filename, ascp_cmd = dl_fastq(runid, layout, filesize)
     if layout == 'failed':
         kal_runtime = 0
     else:
@@ -106,7 +113,7 @@ def check_zero_processed(runid):
     run_info_path = f"{DATA_PATH}/download/kallisto-tmp/{runid}/run_info.json"
     return '"n_processed": 0' in open(run_info_path,'r').read()
 
-def curl_job(runid, layout, idx_path, init_log_path, runtime_log_path):
+def curl_job(runid, layout, filesize, idx_path, init_log_path, runtime_log_path):
     """One of two download modes to choose from.
     Streams fastq with curl and directly pass to kallisto quant.
     Bypasses downloading of fastq."""
@@ -134,27 +141,28 @@ def curl_job(runid, layout, idx_path, init_log_path, runtime_log_path):
     helpers.write_log('\t'.join(fields) + '\n', runtime_log_path)
     return fields
 
-def parallel_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path, workers=8):
+def parallel_loop(job_fn, runs_df, idx_path, init_log_path, runtime_log_path, workers=8):
     """One of two loop functions to choose from.
     Executes job_fn on each elements in runids in parallel.
     Returns a list of the return values of job_fn."""
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
-        futures = [executor.submit(job_fn, runid, layout, idx_path, init_log_path, runtime_log_path) for runid, layout in zip(runids, layouts)]
+        futures = [executor.submit(job_fn, runid, layout, filesize, idx_path, init_log_path, runtime_log_path) for _, runid, layout, filesize in runs_df.itertuples()]
     results = []
     for f in concurrent.futures.as_completed(futures):
         results.append(f.result())
     return results
 
-def linear_loop(job_fn, runids, layouts, idx_path, init_log_path, runtime_log_path, workers=None): #workers is a dummy var here
+def linear_loop(job_fn, runs_df, idx_path, init_log_path, runtime_log_path, workers=None): #workers is a dummy var here
     """One of two loop functions to choose from.
     Executes job_fn on each elements in runids linearly.
     Returns a list of the return values of job_fn."""
     results = []
-    for runid, layout in zip(runids, layouts):
+    for _, runid, layout, _ in runs_df.itertuples():
+        # Have not utilized filesize for linear_loop yet
         results.append(job_fn(runid, layout, idx_path, init_log_path, runtime_log_path))
     return results
 
-def process_batch(runids, layouts, idx_path, spe, curl=False, linear=False, workers=8):
+def process_batch(runs_df, idx_path, spe, curl=False, linear=False, workers=8):
     init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
     runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
     batch_start = time.time()
@@ -162,7 +170,7 @@ def process_batch(runids, layouts, idx_path, spe, curl=False, linear=False, work
     loop_fn = linear_loop if linear else parallel_loop
     job_mode = curl_job if curl else ascp_job
     # Run the loop_fn in job_mode and pass other required parameters
-    results = loop_fn(job_mode, runids, layouts, idx_path, init_log_path, runtime_log_path, workers)
+    results = loop_fn(job_mode, runs_df, idx_path, init_log_path, runtime_log_path, workers)
     batch_runtime = round(time.time() - batch_start, 2)
     helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 

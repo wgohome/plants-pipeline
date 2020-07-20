@@ -46,12 +46,12 @@ if download_method == 'ascp':
 elif download_method == 'curl':
     curl_stream = True
 else:
-    raise Exception("-method specified is invalid. Only accepts 'ascp' or 'curl'")
+    raise Exception("--method specified is invalid. Only accepts 'ascp' or 'curl'")
 
 # TODO: Make it robust to SRA inconsistent header names
 runs_df = helpers.read_runtable(spe, runtable_path).iloc[::300]
-runids = runs_df['Run']
-layouts = runs_df['LibraryLayout']
+# runids = runs_df['Run']
+# layouts = runs_df['LibraryLayout']
 
 if __name__ == '__main__':
     # Create index file for species if not present
@@ -59,4 +59,4 @@ if __name__ == '__main__':
         assert os.path.exists(cds_path), f"The CDS for {spe} is not in pipeline-data/download/cds."
         runtime, exit_code, _ = kallisto_index(idx_path=idx_path, cds_path=cds_path)
     # Run the batch
-    process_batch(runids, layouts, idx_path, spe, curl=curl_stream, linear=linearmode, workers=workers)
+    process_batch(runs_df, idx_path, spe, curl=curl_stream, linear=linearmode, workers=workers)
