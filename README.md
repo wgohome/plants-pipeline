@@ -23,7 +23,7 @@ pip install -r config/requirements.txt
 
 To setup the directories for this project's data repository, run this command, replacing `path/to/data/repository/` with your desired path.
 ```
-python3 cofig/setup_data.py -p /path/to/data/repository/
+python3 config/setup_data.py -p /path/to/data/repository/
 ```
 
 Then, open `config/constants.py` file and edit the `ASPERA_SSH_KEY` and `DATA_PATH` variables accordingly based on your local machine. In general, `ASPERA_SSH_KEY` is located in a standard install path for Mac and another path for Linux.
@@ -61,16 +61,18 @@ Call the `despatch.py` script with the following arguments.
 - `-c` is for the name (not full path) of the CDS fasta file found in `pipeline-data/download/cds/`. It will be good to set up a convention such as 'Ath.cds.fasta' for the file naming.
 - `-m` if for one of the two download methods: 'ascp' or 'curl'
 - `-l` is an optional tag to indicate if download is to be done linearly. By default, download will be in parallel processes.
+- `-w` is an optional tag to set the number of workers for miltiprocessing. If download is to be done linearly, this argument will be ignored. By default, number of workers is set to 8.
 
-For example:
+For example, some possible commands are:
 ```
 python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp
+python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp -w 4
 python download/despatch.py -s Ath -c Ath.cds.fasta -m curl -l
 ```
 
 To run the download in the background, instead, run this:
 ```
-nohup python download/despatch.py -i Ath -c Ath.cds.fasta -m ascp &
+nohup python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp &
 ```
 The stdout will be found in the file 'nohup.out'. However, due to multi-processing, the stdout might not make much sense. Instead, the log files can be more informative.
 
