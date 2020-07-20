@@ -28,3 +28,6 @@ PATH=`pwd`/dependencies/kallisto:$PATH
 PATH=~/.aspera/cli/bin:$PATH # Specific path to linux
 export $PATH
 echo "\$PATH exported, 'kallisto' and 'ascp' can be called from the CLI"
+
+# Install chromedriver
+sudo apt-get install chromium-chromedriver
