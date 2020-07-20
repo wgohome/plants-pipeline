@@ -49,9 +49,9 @@ else:
     raise Exception("--method specified is invalid. Only accepts 'ascp' or 'curl'")
 
 # TODO: Make it robust to SRA inconsistent header names
-runs_df = helpers.read_runtable(spe, runtable_path).iloc[::300]
-# runids = runs_df['Run']
-# layouts = runs_df['LibraryLayout']
+runs_df = helpers.read_runtable(spe, runtable_path).iloc[::500]
+runs_df['Bytes'] = runs_df.loc[:,'Bytes'].fillna('0')
+runs_df['Bytes'] = runs_df.loc[:,'Bytes'].astype(int)
 
 if __name__ == '__main__':
     # Create index file for species if not present
