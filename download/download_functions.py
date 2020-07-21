@@ -59,10 +59,11 @@ def dl_fastq(runid, layout, filesize):
     p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
     out_path = f"{DATA_PATH}/download/fastq-tmp/"
     # checkrunid file size
-    if filesize <= 1000000000:
-        ascp_limit_tag = ""
-    else:
-        ascp_limit_tag = "-@ 0:1000000000"
+    # if filesize <= 1000000000:
+    #     ascp_limit_tag = ""
+    # else:
+    #     ascp_limit_tag = "-@ 0:1000000000"
+    ascp_limit_tag = ""
 
     if layout.upper() == 'PAIRED':
         # Add bytes kwarg
