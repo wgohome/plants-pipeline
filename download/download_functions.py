@@ -71,7 +71,7 @@ def dl_fastq(runid, layout, filesize):
         if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{p_file}"):
             return runtime, 'paired', p_file, cmd
     else:
-        runtime, _, cmd = ascp_transfer(route=up_route, out_path=out_path)
+        runtime, _, cmd = ascp_transfer(route=up_route, out_path=out_path, ascp_limit_tag=ascp_limit_tag)
         if os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{up_file}"):
             return runtime, 'unpaired', up_file, cmd
     return runtime, 'failed', '', cmd
