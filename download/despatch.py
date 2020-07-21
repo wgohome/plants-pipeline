@@ -49,7 +49,7 @@ else:
     raise Exception("--method specified is invalid. Only accepts 'ascp' or 'curl'")
 
 # TODO: Make it robust to SRA inconsistent header names
-runs_df = helpers.read_runtable(spe, runtable_path).iloc[::500]
+runs_df = helpers.read_runtable(spe, runtable_path).iloc[::300]
 runs_df['Bytes'] = runs_df.loc[:,'Bytes'].fillna('0')
 runs_df['Bytes'] = runs_df.loc[:,'Bytes'].astype(int)
 

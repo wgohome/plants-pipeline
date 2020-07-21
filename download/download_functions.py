@@ -85,6 +85,7 @@ def ascp_job(runid, layout, filesize, idx_path, init_log_path, runtime_log_path)
     ascp_runtime, layout, filename, ascp_cmd = dl_fastq(runid, layout, filesize)
     if layout == 'failed':
         kal_runtime = 0
+        kal_cmd = ''
     else:
         out_dir = f"{DATA_PATH}/download/kallisto-tmp/{runid}/"
         os.makedirs(out_dir, exist_ok=True)
