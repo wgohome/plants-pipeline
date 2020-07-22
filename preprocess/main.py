@@ -16,6 +16,7 @@ from preprocess import match, sra
 spe = 'Egu'
 species = 'Elaeis guineensis'
 sra_runtable_path = f"{DATA_PATH}/preprocess/sra-runtables/{spe}_sra_runtable.txt"
-spe_df = sra.process_sra_runtable(sra_runtable_path, species)
+tax_id = sra.get_taxanomic_id(species)
+spe_df = sra.process_sra_runtable(tax_id, species)
 match.annotate(spe_df, species, db='sra')
 print("Done 😄")
