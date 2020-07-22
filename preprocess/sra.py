@@ -65,6 +65,9 @@ def process_sra_runtable(tax_id, species, query_attributes=default_attributes):
     return sra_df
 
 def get_sra_runtable(tax_id, species, query_attributes=default_attributes):
+    sra_runtable_path = f"{DATA_PATH}/preprocess/sra-runtables/{iohelper.species_shortform(species)}_sra_runtable.txt"
+    if os.path.exists(sra_runtable_path):
+        return sra_runtable_path
     webenv = make_sra_query(tax_id, species, query_attributes)
     if webenv == None:
         return None

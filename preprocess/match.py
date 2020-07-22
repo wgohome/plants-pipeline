@@ -121,12 +121,13 @@ def choose_most_specific_term(matches):
     return sorted(matches, key=most_specific_term)[-1]
 
 def choose_least_specific_term(matches):
+    """Return most general term out of matches"""
     path_length = lambda path: len(path)
-    # Take longest path of match term to represent the specificity of that term
-    longest_path = lambda match: sorted([*match.superclasses()], key=path_length)[0]
-    # Take match term with the longest representaive path
-    most_specific_term = lambda match: len(longest_path(match))
-    return sorted(matches, key=most_specific_term)[0]
+    # Take shortest path of match term to represent the generality of that term
+    shortest_path = lambda match: sorted([*match.superclasses()], key=path_length)[0]
+    # Take match term with the shortest representaive path
+    least_specific_term = lambda match: len(shortest_path(match))
+    return sorted(matches, key=least_specific_term)[0]
 
 find_best_match = choose_least_specific_term
 

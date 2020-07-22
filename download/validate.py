@@ -85,9 +85,12 @@ def validate_latest_batch(spe):
     for runid in incomplete:
         to_write = f"{runid}\tincomplete\n"
         helpers.write_log(to_write, log_path)
+    return incomplete
 
 if __name__ == '__main__':
-    validate_latest_batch(spe)
+    _ = validate_latest_batch(spe)
+
+__all__ = ['validate_latest_batch', 'species_progress']
 
 # Pull out latest log for species and find out completed/incomplete Run IDs
 # If no log present, pull runids from runtable

@@ -17,6 +17,7 @@ import pdb
 from config.constants import DATA_PATH
 from download_functions import process_batch, kallisto_index
 import helpers
+from validate import validate_latest_batch
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
 parser.add_argument('-s', '--species', nargs=1, metavar='species_alias',
@@ -49,7 +50,7 @@ else:
     raise Exception("--method specified is invalid. Only accepts 'ascp' or 'curl'")
 
 # TODO: Make it robust to SRA inconsistent header names
-runs_df = helpers.read_runtable(spe, runtable_path).iloc[::300]
+runs_df = helpers.read_runtable(spe, runtable_path).iloc[::300][:10]
 runs_df['Bytes'] = runs_df.loc[:,'Bytes'].fillna('0')
 runs_df['Bytes'] = runs_df.loc[:,'Bytes'].astype(int)
 
