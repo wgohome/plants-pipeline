@@ -48,4 +48,14 @@ def get_fastq_routes(runid):
     dirs = f"{runid[:6]}/{dir2}{runid}/"
     return f"{dirs}{p_file}", f"{dirs}{up_file}", p_file, up_file
 
+def initiate_bash_job_file():
+    jobfile_path = f"{DATA_PATH}/download/bash-jobfiles/{get_timestamp()}-jobfile.sh"
+    with open(jobfile_path, 'w') as f:
+        f.write("#!/bin/bash\n")
+    return jobfile_path
+
+def bash_download_script(attributes):
+    template = open('download/min_bash_download_template.sh', 'r').read()
+    return template.format(**attributes)
+
 __all__ = ['get_timestamp', 'initiate_logfile', 'write_log', 'build_runtable_path', 'read_runtable', 'get_fastq_routes']

@@ -47,7 +47,7 @@ def wrap_sh_command(cmd, bash=False):
         return runtime, exit_code, cmd.format(**kwargs)
     return sh_function
 
-ascp_transfer = wrap_sh_command("ascp -QT -l 300m -P33001 {ascp_limit_tag} -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
+ascp_transfer = wrap_sh_command("timeout 360s ascp -QT -l 300m -P33001 {ascp_limit_tag} -i '{ASPERA_SSH_KEY}' era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{route} '{out_path}'")
 kallisto_quant = wrap_sh_command("kallisto quant -i '{idx_path}' -t 2 -o '{out_dir}' --single -l 200 -s 20 '{fastq_path}'")
 kallisto_index = wrap_sh_command("kallisto index -i {idx_path} {cds_path}")
 kallisto_quant_curl = wrap_sh_command("kallisto quant -i {idx_path} -o {out_dir} --single -l 200 -s 20 -t 2 <(curl -L -r 0-1000000000 -m 600 --speed-limit 1000000 --speed-time 30 '{ftp_path}' 2> '{DATA_PATH}/download/kallisto-tmp/{runid}.log')", bash=True)
@@ -59,11 +59,7 @@ def dl_fastq(runid, layout, filesize):
     p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
     out_path = f"{DATA_PATH}/download/fastq-tmp/"
     # checkrunid file size
-    # if filesize <= 1000000000:
-    #     ascp_limit_tag = ""
-    # else:
-    #     ascp_limit_tag = "-@ 0:1000000000"
-    ascp_limit_tag = ""
+    ascp_limit_tag = "" if filesize < 1500000000 else "-@ 0:1000000000"
 
     if layout.upper() == 'PAIRED':
         # Add bytes kwarg
@@ -164,15 +160,44 @@ def linear_loop(job_fn, runs_df, idx_path, init_log_path, runtime_log_path, work
         results.append(job_fn(runid, layout, idx_path, init_log_path, runtime_log_path))
     return results
 
-def process_batch(runs_df, idx_path, spe, curl=False, linear=False, workers=8):
+def bash_loop(runs_df, idx_path, init_log_path, runtime_log_path, workers=8):
+    """Writes bash script for downloading fastq by ascp and then processing kallisto,
+    run in parallel by bash command xargs"""
+    jobfile_path = helpers.initiate_bash_job_file()
+    for _, runid, layout, filesize in runs_df.itertuples():
+        p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
+        attributes = {
+            'runid': runid,
+            'init_log_path': init_log_path,
+            'ascp_limit_tag': "" if filesize < 1500000000 else "-@ 0:1000000000",
+            'ASPERA_SSH_KEY': ASPERA_SSH_KEY,
+            'route': p_route if layout.upper() == 'PAIRED' else up_route,
+            'fastq_out': f"{DATA_PATH}/download/fastq-tmp/",
+            'layout': layout,
+            'ASPERA_SSH_KEY': ASPERA_SSH_KEY,
+            'idx_path': idx_path,
+            'kal_out': f"{DATA_PATH}/download/kallisto-tmp/{runid}/",
+            'fastq_path': f"{DATA_PATH}/download/fastq-tmp/{p_file if layout.upper() == 'PAIRED' else up_file}",
+            'runtime_log_path': runtime_log_path
+        }
+        to_write = helpers.bash_download_script(attributes) + '\n'
+        helpers.write_log(to_write, jobfile_path)
+    pdb.set_trace()
+    os.system(f"cat {jobfile_path} | xargs -I % -P {workers} sh -c %")
+    return None
+
+def process_batch(runs_df, idx_path, spe, download_method='ascp-bash', linear=False, workers=8):
     init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
     runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
     batch_start = time.time()
-    # Define download modes
-    loop_fn = linear_loop if linear else parallel_loop
-    job_mode = curl_job if curl else ascp_job
-    # Run the loop_fn in job_mode and pass other required parameters
-    results = loop_fn(job_mode, runs_df, idx_path, init_log_path, runtime_log_path, workers)
+    # Define download method and mode
+    if download_method == 'ascp-bash':
+        bash_loop(runs_df, idx_path, init_log_path, runtime_log_path, workers)
+    elif download_method in ['ascp-python', 'curl']:
+        loop_fn = linear_loop if linear else parallel_loop
+        job_mode = curl_job if download_method == 'curl' else ascp_job
+        # Run the loop_fn in job_mode and pass other required parameters
+        results = loop_fn(job_mode, runs_df, idx_path, init_log_path, runtime_log_path, workers)
     batch_runtime = round(time.time() - batch_start, 2)
     helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 

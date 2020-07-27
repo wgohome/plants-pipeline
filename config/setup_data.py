@@ -13,6 +13,7 @@ dests = {
     'download': [
         'cds',
         'idx',
+        'bash-jobfiles',
         'bash-tmp',
         'fastq-tmp',
         'kallisto-tmp',
