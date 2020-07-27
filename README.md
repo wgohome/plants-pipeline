@@ -34,16 +34,19 @@ ASPERA_SSH_KEY = "/Users/[your-username]/Applications/Aspera CLI/etc/asperaweb_i
 ASPERA_SSH_KEY = "/home/.aspera/cli/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For Linux
 ```
 
-## For subsequent runs
+## For each subsequent runs
 
-Begin by entering the main directory of this pipeline, which is `plants-pipeline` if your cloned from this Github repository. Run these commands to set up the environment for each new session.
+Begin by entering the main directory of this pipeline, which is `plants-pipeline` if you cloned from this Github repository. 
+```cd /path/to/plants-pipeline```
+
+Run these commands to set up the environment for each new session.
 
 To activate this python environment and all its packages:
 ```
 source proj_env/bin/activate
 ```
 
-Then, to setup kallisto and ascp commands,
+Then, to setup kallisto, ascp commands and other dependencies,
 
 For MacOS,
 ```
@@ -59,22 +62,29 @@ source config/setup_lin.sh
 Call the `despatch.py` script with the following arguments.
 - `-s` is for the 3 letter alias for the species name. For example, Arabidopsis thaliana should have the alias 'Ath'.
 - `-c` is for the name (not full path) of the CDS fasta file found in `pipeline-data/download/cds/`. It will be good to set up a convention such as 'Ath.cds.fasta' for the file naming.
-- `-m` if for one of the two download methods: 'ascp' or 'curl'
-- `-l` is an optional tag to indicate if download is to be done linearly. By default, download will be in parallel processes.
+- `-m` if for one of the three download methods: 'ascp-bash', 'ascp-python' or 'curl'.
+- `-l` is an optional tag to indicate if download is to be done linearly. By default, download will be in parallel processes. This only applies if --method chosen was 'ascp-python' or 'curl'
 - `-w` is an optional tag to set the number of workers for miltiprocessing. If download is to be done linearly, this argument will be ignored. By default, number of workers is set to 8.
 
 For example, some possible commands are:
+
+**Main use case:** 
 ```
-python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp
-python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp -w 4
+python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp-bash -w 20
+```
+
+**Other use cases:**
+```
+python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp-python
+python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp-python -w 4
 python download/despatch.py -s Ath -c Ath.cds.fasta -m curl -l
 ```
 
 To run the download in the background, instead, run this:
 ```
-nohup python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp &
+nohup python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp-bash -w 20 &
 ```
-The stdout will be found in the file 'nohup.out'. However, due to multi-processing, the stdout might not make much sense. Instead, the log files can be more informative.
+The stdout will be found in the file 'nohup.out'. However, due to multi-processing, the stdout might not make much sense. Instead, the log files can be more informative. If ascp-bash method is selected, there will be less stdout due to the use of xargs to spawn multiprocesses.
 
 ### Checking the logs
 
