@@ -58,4 +58,7 @@ def bash_download_script(attributes):
     template = open('download/min_bash_download_template.sh', 'r').read()
     return template.format(**attributes)
 
+def minify(input_path, output_path):
+    os.system(f"sed -e '/^$/d' {input_path}| tr '\n' ' ' > {output_path}")
+
 __all__ = ['get_timestamp', 'initiate_logfile', 'write_log', 'build_runtable_path', 'read_runtable', 'get_fastq_routes']

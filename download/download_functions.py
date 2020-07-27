@@ -182,8 +182,7 @@ def bash_loop(runs_df, idx_path, init_log_path, runtime_log_path, workers=8):
         }
         to_write = helpers.bash_download_script(attributes) + '\n'
         helpers.write_log(to_write, jobfile_path)
-    pdb.set_trace()
-    os.system(f"cat {jobfile_path} | xargs -I % -P {workers} sh -c %")
+    os.system(f"cat {jobfile_path}| xargs -I % -P {workers} sh -c %")
     return None
 
 def process_batch(runs_df, idx_path, spe, download_method='ascp-bash', linear=False, workers=8):
@@ -202,4 +201,3 @@ def process_batch(runs_df, idx_path, spe, download_method='ascp-bash', linear=Fa
     helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
 
 __all__ = ['process_batch', 'kallisto_index']
-
