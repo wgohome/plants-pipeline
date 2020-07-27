@@ -169,7 +169,7 @@ def bash_loop(runs_df, idx_path, init_log_path, runtime_log_path, workers=8):
         attributes = {
             'runid': runid,
             'init_log_path': init_log_path,
-            'ascp_limit_tag': "" if filesize < 1500000000 else "-@ 0:1000000000",
+            'ascp_limit_tag': "" if filesize < 1500000000 else "-@0:1000000000",
             'ASPERA_SSH_KEY': ASPERA_SSH_KEY,
             'route': p_route if layout.upper() == 'PAIRED' else up_route,
             'fastq_out': f"{DATA_PATH}/download/fastq-tmp/",
