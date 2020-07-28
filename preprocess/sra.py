@@ -41,8 +41,7 @@ from preprocess import ena
 
 # CONSTANTS
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + '/'
-SRA_WAITING_ROOM_PATH = f"{BASE_PATH}dlwaitingroom/" # Waiting room as default dir for chrome to download to, before moved to OUT_PATH
-OUT_PATH = f"{DATA_PATH}/preprocess/sra-runtables/"
+SRA_WAITING_ROOM_PATH = f"{BASE_PATH}dlwaitingroom/" # Waiting room as default dir for chrome to download to, before moved to sra_runtable_path
 
 # Local variables
 default_attributes = {}
@@ -65,7 +64,7 @@ def process_sra_runtable(tax_id, species, query_attributes=default_attributes):
     return sra_df
 
 def get_sra_runtable(tax_id, species, query_attributes=default_attributes):
-    sra_runtable_path = f"{DATA_PATH}/preprocess/sra-runtables/{iohelper.species_shortform(species)}_sra_runtable.txt"
+    sra_runtable_path = iohelper.make_filename(db='sra', filetype='runtable', spe_id=f"taxid{tax_id}")
     if os.path.exists(sra_runtable_path):
         return sra_runtable_path
     webenv = make_sra_query(tax_id, species, query_attributes)
@@ -144,7 +143,7 @@ def move_downloaded_file(species, dirs):
     origin_name = f"{SRA_WAITING_ROOM_PATH}{dirs[0]}"
     species_label = iohelper.species_label(species)
     new_name = f"{SRA_WAITING_ROOM_PATH}{species_label}_sra_runtable.txt"
-    target_path = f"{OUT_PATH}{species_label}_sra_runtable.txt"
+    target_path = iohelper.make_filename(db='sra', filetype='runtable', species=species)
     os.rename(origin_name, new_name)
     shutil.move(new_name, target_path) # change target to full path instead of dir path to allow overwrite
     return target_path
