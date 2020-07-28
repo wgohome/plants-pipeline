@@ -2,9 +2,9 @@
 
 **NTU Plants Systems Biology and Evolution Laboratory** ([Mutwil's Lab](https://www.plant.tools))
 
-This repository is found in [Github Repository](https://github.com/wirriamm/plants-pipeline). Create pull requests for issues/bugs.
+This repository is found in [Github Repository](https://github.com/wirriamm/plants-pipeline). Do create pull requests for issues/bugs and feature requests.
 
-[Contact me](mailto:will0046@e.ntu.edu.sg)
+[Contact me](mailto:will0046@e.ntu.edu.sg) for feedback.
 
 ## First setup
 
@@ -17,7 +17,7 @@ pip install --upgrade pip
 pip install -r config/requirements.txt
 ```
 
-To setup the directories for this project's data repository, run this command, replacing `path/to/data/repository/` with your desired path.
+To setup the directories for this project's data repository, run this command, replacing `path/to/data/repository/` with your desired path. The pipeline's main data repository named `pipeline-data` will be stored within this specified directory. `path/to/data/repository/` should be separate from this repository's `plants-pipeline` directory and should not be tracked by this repository's version control.
 ```
 python3 config/setup_data.py -p /path/to/data/repository/
 ```
@@ -25,7 +25,7 @@ python3 config/setup_data.py -p /path/to/data/repository/
 Then, open `config/constants.py` file and edit the `ASPERA_SSH_KEY` and `DATA_PATH` variables accordingly based on your local machine. In general, `ASPERA_SSH_KEY` is located in a standard install path for Mac and another path for Linux.
 
 ```
-DATA_PATH = "path/to/data/repository/"
+DATA_PATH = "path/to/data/repository/plants-pipeline"
 ASPERA_SSH_KEY = "/Users/[your-username]/Applications/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For MacOS
 ASPERA_SSH_KEY = "/home/.aspera/cli/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For Linux
 ```
