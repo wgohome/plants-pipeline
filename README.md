@@ -1,14 +1,10 @@
 # Plants Transcriptomics Pipeline
 
----
-
 **NTU Plants Systems Biology and Evolution Laboratory** ([Mutwil's Lab](https://www.plant.tools))
 
 This repository is found in [Github Repository](https://github.com/wirriamm/plants-pipeline). Create pull requests for issues/bugs.
 
 [Contact me](mailto:will0046@e.ntu.edu.sg)
-
----
 
 ## First setup
 
@@ -36,6 +32,8 @@ ASPERA_SSH_KEY = "/home/.aspera/cli/Aspera CLI/etc/asperaweb_id_dsa.openssh" # F
 
 ## For each subsequent runs
 
+### 1. Set up environment and dependencies
+
 Begin by entering the main directory of this pipeline, which is `plants-pipeline` if you cloned from this Github repository. 
 ```cd /path/to/plants-pipeline```
 
@@ -57,7 +55,29 @@ For Linux,
 source config/setup_lin.sh
 ```
 
-### Download one species
+### 2. Get runtables
+
+Runtables can be obtained from NCBI's SRA or ENA. The runtables will be saved in `pipeline-data/preprocess/sra-runtables` and `pipeline-data/preprocess/ena-runtables`. Files are labelled by their taxanomic id.
+
+To download the runtables, call the following command, replacing 'Arabidopsis thaliana' with the species name of interest. Note to wrap the species name in quotation marks.
+
+```
+python preprocess/main.py -s 'Arabidopsis thaliana' -d sra
+```
+or
+```
+python preprocess/main.py -s 'Arabidopsis thaliana' -d ena
+```
+
+The available options are:
+- `-s` for specifying the full species name. Mandatory.
+- `-d` for specifying the database source, accepting either `sra` or `ena`. Mandatory.
+- `-a` is an optional tag, which can be specified without any arguments, to extract organ annotations from the runtables.
+
+Organ annotations (if activated) will be stored in `data-pipeline/preprocess/sra-annotations` and `data-pipeline/preprocess/ena-annotations` respectively.
+
+
+### 3. Download one species
 
 Call the `despatch.py` script with the following arguments.
 - `-s` is for the 3 letter alias for the species name. For example, Arabidopsis thaliana should have the alias 'Ath'.
@@ -96,7 +116,7 @@ Once the download have completed, two logfiles can be checked. Logfiles' names b
 - `initiation` directory stores the files containing the timestamp at which each Run ID in the batch was initiated.
 - `runtime` directory stores the files containing the timestamp, library layout and download error type (if any) of each Run ID. However, if the child process for downloading the RunID was broken, it will not be logged in this file. The Run ID should still be found in the logfile from `initiation`.
 
-### Checking the kallisto output files and reinitiating new batch for missing files
+### 4. Checking the kallisto output files and reinitiating new batch for missing files
 
 After downloading a batch, to check the successful downloads against the Run IDs in the runtable, run the following file.
 - `-s` specifies the species three-letter alias
@@ -111,6 +131,6 @@ This script will:
 - Remove fastq files of successful downloads from `pipline-data/download/fastq-tmp`
 - Update a new log file in `pipline-data/download/logs/progress/[timestamp]-[spe]-progress.log`
 
-### Redownloading failed Run IDs
+### 5. Redownloading failed Run IDs
 
 _To be updated_
