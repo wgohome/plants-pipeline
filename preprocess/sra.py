@@ -65,6 +65,9 @@ def process_sra_runtable(tax_id, species, query_attributes=default_attributes):
     return sra_df
 
 def get_sra_runtable(tax_id, species, query_attributes=default_attributes):
+    sra_runtable_path = f"{DATA_PATH}/preprocess/sra-runtables/{iohelper.species_shortform(species)}_sra_runtable.txt"
+    if os.path.exists(sra_runtable_path):
+        return sra_runtable_path
     webenv = make_sra_query(tax_id, species, query_attributes)
     if webenv == None:
         return None
@@ -139,9 +142,9 @@ def check_download_status(species):
 
 def move_downloaded_file(species, dirs):
     origin_name = f"{SRA_WAITING_ROOM_PATH}{dirs[0]}"
-    Spe = iohelper.species_shortform(species)
-    new_name = f"{SRA_WAITING_ROOM_PATH}{Spe}_sra_runtable.txt"
-    target_path = f"{OUT_PATH}{Spe}_sra_runtable.txt"
+    species_label = iohelper.species_label(species)
+    new_name = f"{SRA_WAITING_ROOM_PATH}{species_label}_sra_runtable.txt"
+    target_path = f"{OUT_PATH}{species_label}_sra_runtable.txt"
     os.rename(origin_name, new_name)
     shutil.move(new_name, target_path) # change target to full path instead of dir path to allow overwrite
     return target_path
