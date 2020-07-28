@@ -160,10 +160,10 @@ def linear_loop(job_fn, runs_df, idx_path, init_log_path, runtime_log_path, work
         results.append(job_fn(runid, layout, idx_path, init_log_path, runtime_log_path))
     return results
 
-def bash_loop(runs_df, idx_path, init_log_path, runtime_log_path, workers=8):
+def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8):
     """Writes bash script for downloading fastq by ascp and then processing kallisto,
     run in parallel by bash command xargs"""
-    jobfile_path = helpers.initiate_bash_job_file()
+    jobfile_path = helpers.initiate_bash_job_file(spe)
     for _, runid, layout, filesize in runs_df.itertuples():
         p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
         attributes = {
@@ -191,7 +191,7 @@ def process_batch(runs_df, idx_path, spe, download_method='ascp-bash', linear=Fa
     batch_start = time.time()
     # Define download method and mode
     if download_method == 'ascp-bash':
-        bash_loop(runs_df, idx_path, init_log_path, runtime_log_path, workers)
+        bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers)
     elif download_method in ['ascp-python', 'curl']:
         loop_fn = linear_loop if linear else parallel_loop
         job_mode = curl_job if download_method == 'curl' else ascp_job

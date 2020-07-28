@@ -10,6 +10,7 @@ if __name__ == '__main__':
 
 ################################################################################
 
+import datetime as dt
 # Local imports
 from config.constants import DATA_PATH
 from preprocess.ena import get_taxanomic_id

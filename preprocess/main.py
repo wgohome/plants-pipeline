@@ -45,4 +45,4 @@ elif db == 'ena':
     ena_df.to_csv(ena_runtable_path, sep='\t', index=False)
     if annotate:
         match.annotate(ena_df, species, db='ena')
-print(f"Downloaded {db} runtable and written annotation for {species} ({spe_id}) 😄")
+print(f"Downloaded {db} runtable for {species} ({spe_id}) 😄")
