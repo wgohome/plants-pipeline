@@ -19,9 +19,9 @@ from download_functions import process_batch, kallisto_index
 import helpers
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
-parser.add_argument('-s', '--species', nargs=1, metavar='species_alias',
-                    help='Enter the species alias to be downloaded. For instance, Arabidopsis thaliana\'s species alias would be \'Ath\'.',
-                    dest='spe', type=str, required=True)
+parser.add_argument('-s', '--species', nargs=1, metavar='species_id',
+                    help='Enter the species id to be downloaded. For instance, Arabidopsis thaliana\'s species id would be \'taxid\'.',
+                    dest='spe_id', type=str, required=True)
 parser.add_argument('-c', '--cds', nargs=1, metavar='cds_filename',
                     help='Enter the file name of the cds .fasta file to use. Do not include the full path, just the filename. It is expected that cds file is places in pipeline-data/download/cds directory.',
                     dest='cds_filename', type=str, required=True)

@@ -37,6 +37,7 @@ default_attributes = {'fields': 'run_accession, tissue_type,tissue_lib,sample_ti
 # Exported functions
 def get_taxanomic_id(scientific_name):
     """ Returns taxanomic id (str) queried from ENA based on scientific name """
+    assert len(species.split() == 2), "species name must comprise of 2 words - the genus and species"
     genus, species = scientific_name.lower().split()
     url = f"https://www.ebi.ac.uk/ena/taxonomy/rest/scientific-name/{genus}%20{species}"
     response = requests.get(url)
