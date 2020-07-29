@@ -60,7 +60,7 @@ def dl_fastq(runid, layout, filesize):
     out_path = f"{DATA_PATH}/download/fastq-tmp/"
     # checkrunid file size
     ascp_limit_tag = "" if filesize < 1500000000 else "-@ 0:1000000000"
-    aspx_not_exists = lambda file: os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{file}.aspx")
+    aspx_not_exists = lambda file: not os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{file}.aspx")
     fastq_exists = lambda file: os.path.exists(f"{DATA_PATH}/download/fastq-tmp/{file}")
     if layout.upper() == 'PAIRED':
         runtime, _, cmd = ascp_transfer(route=p_route, out_path=out_path, ascp_limit_tag=ascp_limit_tag)
