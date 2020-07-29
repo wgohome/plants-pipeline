@@ -1,5 +1,6 @@
 echo -e $(date +%Y%m%d-%H%M%S"\t{runid}") >> {init_log_path};
 ascp_start=$(date +%s);
+{offset}
 timeout 360s ascp -QT -k1 -P33001 -l 300m {ascp_limit_tag} -i {ASPERA_SSH_KEY} era-fasp@fasp.sra.ebi.ac.uk:vol1/fastq/{route} '{fastq_out}';
 ascp_time=$(echo $(date +%s) - $ascp_start | bc);
 sleep 5;

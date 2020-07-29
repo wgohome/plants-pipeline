@@ -165,7 +165,7 @@ def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8
     """Writes bash script for downloading fastq by ascp and then processing kallisto,
     run in parallel by bash command xargs"""
     jobfile_path = helpers.initiate_bash_job_file(spe)
-    for _, runid, layout, filesize in runs_df.itertuples():
+    for i, runid, layout, filesize in runs_df.itertuples():
         p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
         attributes = {
             'runid': runid,
@@ -180,6 +180,7 @@ def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8
             'kal_out': f"{DATA_PATH}/download/kallisto-tmp/{runid}/",
             'fastq_path': f"{DATA_PATH}/download/fastq-tmp/{p_file if layout.upper() == 'PAIRED' else up_file}",
             'runtime_log_path': runtime_log_path,
+            'offset': f"sleep {i * 15};" if i < workers else "",
             'threads': threads
         }
         to_write = helpers.bash_download_script(attributes) + '\n'
