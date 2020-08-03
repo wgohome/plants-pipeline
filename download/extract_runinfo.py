@@ -9,6 +9,7 @@ if __name__ == '__main__':
     sys.path.insert(0, parent_module)
 ################################################################################
 
+import os
 import json
 import argparse
 # relative imports
@@ -16,7 +17,10 @@ from config.constants import DATA_PATH
 import helpers
 
 parser = argparse.ArgumentParser(description = 'This script is called from the shell scipt to read the runinfo string and compile it into a runinfo table.', epilog = 'By Mutwil Lab')
-parser.add_argument('-r', '--runinfo-log', metavar='runinfo_log',
+parser.add_argument('-r', '--runid', metavar='runid',
+                    help='Enter the runid.',
+                    dest='runid', type=str, required=True)
+parser.add_argument('-l', '--runinfo-log', metavar='runinfo_log',
                     help='Enter the species runifo log to append to. For instance, \'[data-path]/download/logs/runinfo/20200730-220000-taxid3702_runinfo.txt\' for Arabidopsis thaliana.',
                     dest='runinfo_log', type=str, required=True)
 parser.add_argument('-k', '--kallisto-path', metavar='kal_out',
@@ -24,11 +28,15 @@ parser.add_argument('-k', '--kallisto-path', metavar='kal_out',
                     dest='kal_out', type=str, required=True)
 
 args = parser.parse_args()
+runid = args.runid
 runinfo_log = args.runinfo_log
 runinfo_path = args.kal_out
-runinfo_string = open(runinfo_path, 'r').read()
-runinfo = json.loads(runinfo_string)
-values = [str(val) for val in runinfo.values()]
+if not os.path.exists(runinfo_path):
+    values = [runid, "run_info.json not found"]
+else:
+    runinfo_string = open(runinfo_path, 'r').read()
+    runinfo = json.loads(runinfo_string)
+    values = [runid] + [str(val) for val in runinfo.values()]
 to_write = '\t'.join(values) + '\n'
 with open(runinfo_log, 'a') as f:
     f.write(to_write)

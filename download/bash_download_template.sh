@@ -12,7 +12,7 @@ elif [ -f {runid}*.gz ];
   kallisto quant -i {idx_path} -t {threads} -o {kal_out} --single -l 200 -s 20 {fastq_path};
   kallisto_time=$(echo $(date +%s) - $kallisto_start | bc);
   rm {fastq_path};
-  python download/extract_runinfo.py -r {runinfo_log} -p {kal_out}/run_info.json
+  python download/extract_runinfo.py -r {runid} -l {runinfo_log} -p {kal_out}/run_info.json
   rm {kal_out}/abundance.h5 {kal_out}/run_info.json;
   zip -r {kal_out}.zip {kal_out}/;
   rm -r {kal_out};

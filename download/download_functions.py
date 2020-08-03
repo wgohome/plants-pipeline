@@ -164,7 +164,7 @@ def linear_loop(job_fn, runs_df, idx_path, init_log_path, runtime_log_path, work
 def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8, threads=2):
     """Writes bash script for downloading fastq by ascp and then processing kallisto,
     run in parallel by bash command xargs"""
-    helpers.initiate_logfile('runinfo', ['n_targets', 'n_bootstraps', 'n_processed', 'n_pseudoaligned', 'n_unique', 'p_pseudoaligned', 'p_unique', 'kallisto_version', 'index_version', 'start_time', 'call'], spe=f"{spe}-")
+    helpers.initiate_logfile('runinfo', ['runid', 'n_targets', 'n_bootstraps', 'n_processed', 'n_pseudoaligned', 'n_unique', 'p_pseudoaligned', 'p_unique', 'kallisto_version', 'index_version', 'start_time', 'call'], spe=f"{spe}-")
     jobfile_path = helpers.initiate_bash_job_file(spe)
     for i, runid, layout, filesize in runs_df.itertuples():
         p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
