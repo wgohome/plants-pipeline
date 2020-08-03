@@ -31,11 +31,10 @@ args = parser.parse_args()
 species = args.species.capitalize()
 db = args.database.lower()
 annotate = args.annotate
-spe_id = iohelper.species_label(species)
-
-sra_runtable_path = f"{DATA_PATH}/preprocess/sra-runtables/{spe_id}_sra_runtable.txt"
-ena_runtable_path = f"{DATA_PATH}/preprocess/ena-runtables/{spe_id}_ena_runtable.txt"
 tax_id = sra.get_taxanomic_id(species)
+spe_id = iohelper.species_label(species)
+sra_runtable_path = iohelper.make_filename(db='sra', filetype='runtable', spe_id=spe_id)
+ena_runtable_path = iohelper.make_filename(db='ena', filetype='runtable', spe_id=spe_id)
 
 if db == 'sra':
     sra_df = sra.process_sra_runtable(tax_id, species) # Downloads SRA runtable, returns df
@@ -46,4 +45,4 @@ elif db == 'ena':
     ena_df.to_csv(ena_runtable_path, sep='\t', index=False)
     if annotate:
         match.annotate(ena_df, species, db='ena')
-print(f"Downloaded {db} runtable and written annotation for {species} ({spe_id}) 😄")
+print(f"Downloaded {db} runtable for {species} ({spe_id}) 😄")

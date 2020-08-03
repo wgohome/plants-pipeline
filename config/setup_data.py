@@ -16,11 +16,11 @@ dests = {
         'bash-jobfiles',
         'bash-tmp',
         'fastq-tmp',
-        'kallisto-tmp',
         'kallisto-out',
         'logs/initiation',
         'logs/runtime',
-        'logs/progress'
+        'logs/progress',
+        'logs/runinfo'
     ],
     'preprocess': [
         'ena-runtables',
