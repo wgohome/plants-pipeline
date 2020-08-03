@@ -9,6 +9,7 @@ if [ -f {fastq_path}.aspx ];
   echo -e $(date +%Y%m%d-%H%M%S"\t{runid}\tfailed\tfailed\t{layout}") >> {runtime_log_path};
 elif [ -f {fastq_out} ];
   then kallisto_start=$(date +%s);
+  mkdir -p {kal_out};
   kallisto quant -i {idx_path} -t {threads} -o {kal_out} --single -l 200 -s 20 {fastq_path};
   kallisto_time=$(echo $(date +%s) - $kallisto_start | bc);
   rm {fastq_path};
@@ -17,6 +18,6 @@ elif [ -f {fastq_out} ];
   zip -r {kal_out}.zip {kal_out}/;
   rm -r {kal_out};
   echo -e $(date +%Y%m%d-%H%M%S"\t{runid}\t$ascp_time\t$kallisto_time\t{layout}") >> {runtime_log_path};
-else;
+else
   echo -e $(date +%Y%m%d-%H%M%S"\t{runid}\tfailed\tfailed\t{layout}") >> {runtime_log_path};
 fi
