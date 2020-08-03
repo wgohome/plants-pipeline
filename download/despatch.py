@@ -48,7 +48,7 @@ if download_method not in ['ascp-bash', 'ascp-python', 'curl']:
 
 # TODO: Make it robust to SRA inconsistent header names
 
-runs_df = helpers.read_runtable(spe_id, runtable_path).iloc[::300][:3]
+runs_df = helpers.read_runtable(spe_id, runtable_path).iloc[::300][:3] # TODO REMOVE
 runs_df['Bytes'] = runs_df.loc[:,'Bytes'].fillna('0')
 runs_df['Bytes'] = runs_df.loc[:,'Bytes'].astype(int)
 

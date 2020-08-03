@@ -9,10 +9,12 @@ if [ -f {runid}*.aspx ];
   echo -e $(date +%Y%m%d-%H%M%S"\t{runid}\tfailed\tfailed\t{layout}") >> {runtime_log_path};
 elif [ -f {runid}*.gz ];
   then kallisto_start=$(date +%s);
-  kallisto quant -i {idx_path} -t {threads} -o {kal_out} --single -l 200 -s 20 -t 2 {fastq_path};
+  kallisto quant -i {idx_path} -t {threads} -o {kal_out} --single -l 200 -s 20 {fastq_path};
   kallisto_time=$(echo $(date +%s) - $kallisto_start | bc);
   rm {fastq_path};
-  zip -r {runid}.zip {runid}/;
-  rm -r {runid};
+  python download/extract_runinfo.py -r {runinfo_log} -p {kal_out}/run_info.json
+  rm {kal_out}/abundance.h5 {kal_out}/run_info.json;
+  zip -r {kal_out}.zip {kal_out}/;
+  rm -r {kal_out};
   echo -e $(date +%Y%m%d-%H%M%S"\t{runid}\t$ascp_time\t$kallisto_time\t{layout}") >> {runtime_log_path};
 fi

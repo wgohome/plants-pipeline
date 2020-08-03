@@ -20,7 +20,8 @@ dests = {
         'kallisto-out',
         'logs/initiation',
         'logs/runtime',
-        'logs/progress'
+        'logs/progress',
+        'logs/runinfo'
     ],
     'preprocess': [
         'ena-runtables',

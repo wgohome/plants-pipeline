@@ -40,14 +40,19 @@ def read_runtable(spe, runtable_path=None):
     return pd.read_csv(runtable_path, sep=',', header=0, index_col=False,
         dtype='string', usecols=['Run', 'Bytes', 'LibraryLayout'])
 
+def get_dirs(runid):
+    if 9 < len(runid) <= 12:
+        dir2 = "0" * (12 - len(runid)) + runid[-(len(runid) - 9):] + "/"
+    else:
+        dir2 = ""
+    dirs = f"{runid[:6]}/{dir2}{runid}/"
+    return dirs
+
 def get_fastq_routes(runid):
     """Returns tuple of trailing path of fastq file in vol1/fastq/ server's directory, for paired and unpaired libraries,
     and also file names for paired and unpaired libraries"""
     p_file, up_file = f"{runid}_1.fastq.gz", f"{runid}.fastq.gz"
-    dir2 = ""
-    if 9 < len(runid) <= 12:
-        dir2 = "0" * (12 - len(runid)) + runid[-(len(runid) - 9):] + "/"
-    dirs = f"{runid[:6]}/{dir2}{runid}/"
+    dirs = get_dirs(runid)
     return f"{dirs}{p_file}", f"{dirs}{up_file}", p_file, up_file
 
 def initiate_bash_job_file(spe):
