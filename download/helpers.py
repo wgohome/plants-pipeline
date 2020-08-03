@@ -45,14 +45,14 @@ def get_dirs(runid):
         dir2 = "0" * (12 - len(runid)) + runid[-(len(runid) - 9):] + "/"
     else:
         dir2 = ""
-    dirs = f"{runid[:6]}/{dir2}{runid}/"
+    dirs = f"{runid[:6]}/{dir2}"
     return dirs
 
 def get_fastq_routes(runid):
     """Returns tuple of trailing path of fastq file in vol1/fastq/ server's directory, for paired and unpaired libraries,
     and also file names for paired and unpaired libraries"""
     p_file, up_file = f"{runid}_1.fastq.gz", f"{runid}.fastq.gz"
-    dirs = get_dirs(runid)
+    dirs = f"{get_dirs(runid)}{runid}/"
     return f"{dirs}{p_file}", f"{dirs}{up_file}", p_file, up_file
 
 def initiate_bash_job_file(spe):

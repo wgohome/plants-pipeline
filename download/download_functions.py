@@ -19,6 +19,8 @@ import pdb
 from config.constants import DATA_PATH, ASPERA_SSH_KEY
 from download import helpers
 
+PARENT_MODULE = re.search('^(.*plants-pipeline)', realpath(dirname(__file__))).group()
+
 def get_ftp_paths(runid):
     p_route, up_route, _, _ = helpers.get_fastq_routes(runid)
     return f"ftp://ftp.sra.ebi.ac.uk/vol1/fastq/{p_route}", f"ftp://ftp.sra.ebi.ac.uk/vol1/fastq/{up_route}"
@@ -178,12 +180,14 @@ def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8
             'layout': layout,
             'ASPERA_SSH_KEY': ASPERA_SSH_KEY,
             'idx_path': idx_path,
+            'kal_tmp': f"{DATA_PATH}/download/kallisto-out/{runid}",
             'kal_out': f"{DATA_PATH}/download/kallisto-out/{helpers.get_dirs(runid)}",
             'fastq_path': f"{DATA_PATH}/download/fastq-tmp/{p_file if layout.upper() == 'PAIRED' else up_file}",
             'runtime_log_path': runtime_log_path,
             'offset': f"sleep {i * 15};" if i < workers else "",
             'threads': threads,
-            'runinfo_log': runinfo_log
+            'runinfo_log': runinfo_log,
+            'parent_module': PARENT_MODULE
         }
         to_write = helpers.bash_download_script(attributes) + '\n'
         helpers.write_log(to_write, jobfile_path)
