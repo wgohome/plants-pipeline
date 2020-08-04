@@ -191,7 +191,7 @@ def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8
         }
         to_write = helpers.bash_download_script(attributes) + '\n'
         helpers.write_log(to_write, jobfile_path)
-    os.system(f"cat {jobfile_path}| xargs -I % -P {workers} sh -c %")
+    os.system(f"cat {jobfile_path}| xargs -I % -P {workers} bash -c %")
     return None
 
 def process_batch(runs_df, idx_path, spe, download_method='ascp-bash', linear=False, workers=8, threads=2):
@@ -208,5 +208,6 @@ def process_batch(runs_df, idx_path, spe, download_method='ascp-bash', linear=Fa
         results = loop_fn(job_mode, runs_df, idx_path, init_log_path, runtime_log_path, workers, threads)
     batch_runtime = round(time.time() - batch_start, 2)
     helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
+    # TODO: total runtime doesnt work when using ascp-bash method
 
 __all__ = ['process_batch', 'kallisto_index']
