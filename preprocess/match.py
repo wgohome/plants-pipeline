@@ -46,7 +46,7 @@ def get_cols(db='ena'):
         cols3 = ['sample_description']
     elif db == 'sra':
         cols1 = ['tissue', 'sample_name', 'tissue_type', 'sample_type', 'sample_title', 'plant_structure', 'Cell_type', 'organism_part', 'Sample_Tissue', 'tissue-type']
-        cols2 = ['title', 'Sample Name', 'Library Name', 'dev_stage', 'Age', 'source_name', 'Ecotype', 'Developmental_stage', 'plant_developmental_stage', 'growth_stage', 'stage', 'tissue_position', 'Development_stage', 'develomental_stage', 'sample_comment', 'developmental_stge']
+        cols2 = ['title', 'Library Name', 'dev_stage', 'Age', 'source_name', 'Ecotype', 'Developmental_stage', 'plant_developmental_stage', 'growth_stage', 'stage', 'tissue_position', 'Development_stage', 'develomental_stage', 'sample_comment', 'developmental_stge']
         cols3 = ['Description']
     return cols1, cols2, cols3
 
