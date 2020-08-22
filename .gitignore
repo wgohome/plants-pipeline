@@ -7,3 +7,4 @@ pipeline-data
 local_paths.py
 *nohup*
 /*.sh
+.env
