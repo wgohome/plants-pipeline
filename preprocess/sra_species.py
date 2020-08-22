@@ -10,12 +10,14 @@ if __name__ == '__main__':
 
 ################################################################################
 """
-Connects to NCBI Taxanomy eUtils to:
-- Get species list
+Functions that connect to NCBI Taxanomy eUtils to:
+- Get species list for all viridiplantae
+- Query the number of sra entires for each species
 """
 import datetime as dt
 import pandas as pd
 import requests
+from time import sleep
 import pdb
 # Relative imports
 from preprocess import iohelper
@@ -48,6 +50,7 @@ def query_species_list():
         taxid_to_species = esummary_webenv(webenv, retstart=(i * 500))
         master_list.extend(taxid_to_species)
         i += 1
+        sleep(0.1)
     return master_list
 
 def sra_exp_numbers(taxid, species):
@@ -61,6 +64,7 @@ def sra_exp_numbers(taxid, species):
     if response.status_code != 200:
         raise ValueError("search terms are invalid, GET request failed")
     illumina_rna_count = int(response.json()['esearchresult']['count'])
+    sleep(0.2)
     return rna_count, illumina_rna_count
 
 def make_species_report():
