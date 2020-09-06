@@ -163,11 +163,11 @@ def linear_loop(job_fn, runs_df, idx_path, init_log_path, runtime_log_path, work
         results.append(job_fn(runid, layout, idx_path, init_log_path, runtime_log_path))
     return results
 
-def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8, threads=2):
+def bash_loop(spe_id, runs_df, idx_path, init_log_path, runtime_log_path, workers=8, threads=2):
     """Writes bash script for downloading fastq by ascp and then processing kallisto,
     run in parallel by bash command xargs"""
-    runinfo_log = helpers.initiate_logfile('runinfo', ['runid', 'n_targets', 'n_bootstraps', 'n_processed', 'n_pseudoaligned', 'n_unique', 'p_pseudoaligned', 'p_unique', 'kallisto_version', 'index_version', 'start_time', 'call'], spe=f"{spe}-")
-    jobfile_path = helpers.initiate_bash_job_file(spe)
+    runinfo_log = helpers.initiate_logfile('runinfo', ['runid', 'n_targets', 'n_bootstraps', 'n_processed', 'n_pseudoaligned', 'n_unique', 'p_pseudoaligned', 'p_unique', 'kallisto_version', 'index_version', 'start_time', 'call'], spe=f"{spe_id}-")
+    jobfile_path = helpers.initiate_bash_job_file(spe_id)
     for i, runid, layout, filesize in runs_df.itertuples():
         p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
         attributes = {
@@ -194,13 +194,13 @@ def bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers=8
     os.system(f"cat {jobfile_path}| xargs -I % -P {workers} bash -c %")
     return None
 
-def process_batch(runs_df, idx_path, spe, download_method='ascp-bash', linear=False, workers=8, threads=2):
-    init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe}-")
-    runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe}-")
+def process_batch(runs_df, idx_path, spe_id, download_method='ascp-bash', linear=False, workers=8, threads=2):
+    init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe_id}-")
+    runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe_id}-")
     batch_start = time.time()
     # Define download method and mode
     if download_method == 'ascp-bash':
-        bash_loop(spe, runs_df, idx_path, init_log_path, runtime_log_path, workers, threads)
+        bash_loop(spe_id, runs_df, idx_path, init_log_path, runtime_log_path, workers, threads)
     elif download_method in ['ascp-python', 'curl']:
         loop_fn = linear_loop if linear else parallel_loop
         job_mode = curl_job if download_method == 'curl' else ascp_job

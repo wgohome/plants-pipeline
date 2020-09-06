@@ -34,11 +34,17 @@ def latest_runtable_path(spe_id):
     runtables = sorted([file for file in os.listdir(f"{DATA_PATH}/preprocess/sra-runtables/") if spe_id in file])
     return f"{DATA_PATH}/preprocess/sra-runtables/{runtables[-1]}"
 
-def read_runtable(spe, runtable_path=None):
+def read_runtable(spe_id, runtable_path=None):
     if runtable_path == None:
-        runtable_path = latest_runtable_path(spe)
-    return pd.read_csv(runtable_path, sep=',', header=0, index_col=False,
-        dtype='string', usecols=['Run', 'Bytes', 'LibraryLayout'])
+        runtable_path = latest_runtable_path(spe_id)
+    runs_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False,
+        dtype='string', usecols=['Run', 'Bytes', 'LibraryLayout', 'Assay Type'])
+    # Remove non RNA-seq
+    runs_df = runs_df[runs_df['Assay Type'] == 'RNA-Seq']
+    runs_df.drop(columns=['Assay Type'], inplace=True)
+    runs_df['Bytes'] = runs_df.loc[:,'Bytes'].fillna('0')
+    runs_df['Bytes'] = runs_df.loc[:,'Bytes'].astype(int)
+    return runs_df
 
 def get_dirs(runid):
     if 9 < len(runid) <= 12:

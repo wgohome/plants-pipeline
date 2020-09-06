@@ -27,7 +27,8 @@ dests = {
         'sra-runtables',
         'ena-annotations',
         'sra-annotations',
-        'species-list'
+        'species-list',
+        'job-list'
     ],
     'postprocess': [
         ''

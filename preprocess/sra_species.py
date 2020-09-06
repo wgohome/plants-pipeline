@@ -26,8 +26,8 @@ from preprocess import iohelper
 from config.constants import DATA_PATH
 
 # Get NCBI API KEY
-# abspath = realpath(dirname(__file__))
-# parent_module = re.search('^(.*pipeline)', abspath).group()
+abspath = realpath(dirname(__file__))
+parent_module = re.search('^(.*pipeline)', abspath).group()
 dotenv_path = os.path.join(parent_module, '.env')
 load_dotenv(dotenv_path)
 NCBI_API_KEY = os.getenv('NCBI_API_KEY')
@@ -59,7 +59,7 @@ def query_species_list():
         taxid_to_species = esummary_webenv(webenv, retstart=(i * 500))
         master_list.extend(taxid_to_species)
         i += 1
-        sleep(0.1)
+        sleep(0.2)
     return master_list
 
 def sra_exp_numbers(taxid, species):
@@ -87,8 +87,13 @@ def make_species_report():
         master_list[i]['illumina_rna_count'] = illumina_rna_count
         print(f"Done for #{i+1}/{len(master_list)}. {master_list[i]['species']}")
     master_df = pd.DataFrame(master_list)
+    master_df.sort_values(by=['illumina_rna_count', 'rna_count'], ascending=False, inplace=True)
     master_df.to_csv(f"{DATA_PATH}/preprocess/species-list/{iohelper.get_timestamp()}-taxid33090.txt", sep='\t', index=False)
     print("File saved in pipeline-data/preprocess/species-list")
+    cds_df = master_df.copy()
+    cds_df['cds_link'] = None
+    cds_df.to_csv(f"{DATA_PATH}/preprocess/job-list/{iohelper.get_timestamp()}-taxid33090.txt", sep='\t', index=False)
+    print("TO EDIT: file saved in pipeline-data/preprocess/job-list, add cds links for species to be processed.")
     return master_df
 
-master_df = make_species_report()
+__all__ = ['make_species_report']

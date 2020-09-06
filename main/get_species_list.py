@@ -9,9 +9,7 @@ if __name__ == '__main__':
     sys.path.insert(0, parent_module)
 ################################################################################
 
-import os
-import argparse
-import pandas as pd
-import pdb
 # Relative imports
-from config.constants import DATA_PATH
+from preprocess import sra_species
+
+master_df = sra_species.make_species_report()

@@ -56,9 +56,12 @@ Usage notes:
 """
 get_taxanomic_id = ena.get_taxanomic_id
 
-def process_sra_runtable(tax_id, species, query_attributes=default_attributes):
+def process_sra_runtable(tax_id, species=None, query_attributes=default_attributes):
+    if not species:
+        species = iohelper.species_name(tax_id)
     runtable_path = get_sra_runtable(tax_id, species, query_attributes)
     if runtable_path == None:
+        print(f"Failed to download sra runtable for taxid{tax_id} {species}")
         return None
     sra_df = read_sra_runtable(runtable_path, query_attributes)
     return sra_df

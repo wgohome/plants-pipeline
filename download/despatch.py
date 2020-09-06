@@ -15,7 +15,7 @@ import pandas as pd
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
-from download_functions import process_batch, kallisto_index
+from download.download_functions import process_batch, kallisto_index
 import helpers
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')

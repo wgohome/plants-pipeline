@@ -10,7 +10,9 @@ if __name__ == '__main__':
 
 ################################################################################
 
+import os
 import datetime as dt
+import pandas as pd
 # Local imports
 from config.constants import DATA_PATH
 from preprocess.ena import get_taxanomic_id
@@ -37,10 +39,10 @@ def write_annotation(line, out_path):
     with open(out_path, 'a') as f:
         f.write(line)
 
-def get_species_list(path):
-    with open(path, 'r') as f:
-        lines = [line.strip() for line in f.readlines()]
-    return lines
+# def get_species_list(path):
+#     with open(path, 'r') as f:
+#         lines = [line.strip() for line in f.readlines()]
+#     return lines
 
 def species_shortform(species):
     '''Arabidopsis thaliana => Ath'''
@@ -48,7 +50,15 @@ def species_shortform(species):
     return species.split()[0][0] + species.split()[1][0:2]
 
 def species_label(species):
+    '''3702 => taxid3702'''
     taxid = get_taxanomic_id(species)
     return f"taxid{taxid}"
+
+def species_name(taxid):
+    directory = f"{DATA_PATH}/preprocess/species-list"
+    latest_list = max(os.listdir(directory))
+    df = pd.read_csv(f"{directory}/{latest_list}", sep='\t')
+    species_name = df.loc[df['taxid'] == taxid]['species'].values[0]
+    return species_name
 
 __all__ = ['create_annotation_file', 'write_annotation', 'get_species_list', 'species_shortform']
