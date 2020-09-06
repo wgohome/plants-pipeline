@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import os
 import wget
+import re
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
@@ -39,7 +40,7 @@ def get_valid_jobs():
     job_df = raw_job_df.loc[raw_job_df['cds_link'].notnull(),:]
     taxids = job_df['taxid'].tolist()
     idx_exists = lambda taxid: os.path.exists(f"{DATA_PATH}/download/idx/taxid{taxid}.idx")
-    runtable_exists = lambda taxid: f"taxid{taxid}" in os.listdir(f"{DATA_PATH}/preprocess/sra-runtables/")
+    runtable_exists = lambda taxid: len([file for file in os.listdir(f"{DATA_PATH}/preprocess/sra-runtables/") if f"taxid{taxid}" in file])
     ready_taxids = [taxid for taxid in taxids if (idx_exists(taxid) and runtable_exists(taxid))]
     return ready_taxids
 
