@@ -32,7 +32,7 @@ ASPERA_SSH_KEY = "/home/.aspera/cli/Aspera CLI/etc/asperaweb_id_dsa.openssh" # F
 
 ## For each subsequent runs
 
-### 1. Set up environment and dependencies
+### Set up environment and dependencies
 
 Begin by entering the main directory of this pipeline, which is `plants-pipeline` if you cloned from this Github repository. 
 ```cd /path/to/plants-pipeline```
@@ -54,6 +54,35 @@ For Linux,
 ```
 source config/setup_lin.sh
 ```
+
+## Bulk Run
+
+### 1. Get species list
+```
+python main/get_species_list.py
+```
+The species list will be found in `{DATA_PATH}/preprocess/species-list/` directory.
+
+The same list will also be foind in `{DATA_PATH}/preprocess/job-list/` directory. This tsv file is to be editted by the user. For species to be downloaded, user can input the ftp/http url to the cds file for the species under the `cds_link` column. For species that the user does not want to download (number of experiments too low), the user can delete the row from this file or just leave the field under `cds_link` blank.
+
+### 2. Download cds and runtables, create kallisto index
+```
+python main/get_support_files.py
+```
+This script will run based on the latest timestamped file (edited with `cds_link`) in `{DATA_PATH}/preprocess/job-list/`.
+
+### 3. Running the download job
+```
+nohup python main/run_job.py -m ascp-bash -w 20 -t 2 &
+```
+The compulsory arguments are:
+- `-m` is for one of the three download methods: 'ascp-bash', 'ascp-python' or 'curl'. `ascp-bash` is the desired method of this pipeline.
+- `-w` is to set the number of workers for multiprocessing.
+- `-t` is to set the number of threads when performing kallisto quant.
+
+`nohup` is used to run the job in the background.
+
+## Running for one species
 
 ### 2. Get runtables
 
@@ -82,9 +111,10 @@ Organ annotations (if activated) will be stored in `data-pipeline/preprocess/sra
 Call the `despatch.py` script with the following arguments.
 - `-s` is for the 3 letter alias for the species name. For example, Arabidopsis thaliana should have the alias 'Ath'.
 - `-c` is for the name (not full path) of the CDS fasta file found in `pipeline-data/download/cds/`. It will be good to set up a convention such as 'Ath.cds.fasta' for the file naming.
-- `-m` if for one of the three download methods: 'ascp-bash', 'ascp-python' or 'curl'.
+- `-m` is for one of the three download methods: 'ascp-bash', 'ascp-python' or 'curl'.
 - `-l` is an optional tag to indicate if download is to be done linearly. By default, download will be in parallel processes. This only applies if --method chosen was 'ascp-python' or 'curl'
 - `-w` is an optional tag to set the number of workers for miltiprocessing. If download is to be done linearly, this argument will be ignored. By default, number of workers is set to 8.
+- `-t` is an optional tag to set the number of threads when performing kallisto quant.
 
 For example, some possible commands are:
 
