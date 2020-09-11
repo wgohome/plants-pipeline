@@ -59,8 +59,11 @@ source config/setup_lin.sh
 
 ### 1. Get species list
 ```
-python main/get_species_list.py
+python main/get_species_list.py -n viridiplantae -t 33090
 ```
+- `-n` is for the taxanomic name of the family or any other ranks above species.
+- `-t` is for the taxanomic id of that name.
+
 The species list will be found in `{DATA_PATH}/preprocess/species-list/` directory.
 
 The same list will also be foind in `{DATA_PATH}/preprocess/job-list/` directory. This tsv file is to be editted by the user. For species to be downloaded, user can input the ftp/http url to the cds file for the species under the `cds_link` column. For species that the user does not want to download (number of experiments too low), the user can delete the row from this file or just leave the field under `cds_link` blank.
