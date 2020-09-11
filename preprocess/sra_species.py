@@ -32,8 +32,8 @@ dotenv_path = os.path.join(parent_module, '.env')
 load_dotenv(dotenv_path)
 NCBI_API_KEY = os.getenv('NCBI_API_KEY')
 
-def esearch_genome(retstart=0, retmax=500):
-    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=genome&retmode=json&term=viridiplantae[orgn:__txid33090]&retstart={retstart}&retmax={retmax}&usehistory=y&api_key={NCBI_API_KEY}"
+def esearch_genome(name, taxid, retstart=0, retmax=500):
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=genome&retmode=json&term={name}[orgn:__txid{taxid}]&retstart={retstart}&retmax={retmax}&usehistory=y&api_key={NCBI_API_KEY}"
     response = requests.get(url)
     if response.status_code != 200:
         raise ValueError("search terms are invalid, GET request failed")
@@ -50,12 +50,12 @@ def esummary_webenv(webenv, retstart=0, retmax=500):
     results = response.json()["result"]
     return [{'taxid': attrs['taxid'], 'species': attrs['organism_name']} for key, attrs in results.items() if key != 'uids']
 
-def query_species_list():
+def query_species_list(name, taxid):
     master_list = []
     i = 0
     retmax = 500
     while retmax == 500:
-        webenv, count, retmax = esearch_genome(retstart=(i * 500))
+        webenv, count, retmax = esearch_genome(name, taxid, retstart=(i * 500))
         taxid_to_species = esummary_webenv(webenv, retstart=(i * 500))
         master_list.extend(taxid_to_species)
         i += 1
@@ -76,8 +76,8 @@ def sra_exp_numbers(taxid, species):
     sleep(0.2)
     return rna_count, illumina_rna_count
 
-def make_species_report():
-    master_list = query_species_list()
+def make_species_report(name, taxid):
+    master_list = query_species_list(name, taxid)
     print("Species list obtained")
     for i in range(len(master_list)):
     # master_list = master_list[:3]
