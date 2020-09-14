@@ -195,6 +195,7 @@ def bash_loop(spe_id, runs_df, idx_path, init_log_path, runtime_log_path, worker
     return None
 
 def process_batch(runs_df, idx_path, spe_id, download_method='ascp-bash', linear=False, workers=8, threads=2):
+    helpers.minify("download/bash_download_template.sh", "download/min_bash_download_template.sh")
     init_log_path = helpers.initiate_logfile('initiation', ['timestamp', 'runid'], spe=f"{spe_id}-")
     runtime_log_path = helpers.initiate_logfile('runtime', ['timestamp', 'runid', 'ascp_time', 'kallisto_time', 'library_layout'], spe=f"{spe_id}-")
     batch_start = time.time()
