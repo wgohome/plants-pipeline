@@ -80,7 +80,7 @@ def make_species_report(name, taxid):
     master_list = query_species_list(name, taxid)
     print("Species list obtained")
     # 1. Check if last run of species report is terminated halfway
-    species_list_files = sorted(os.listdir(f"{DATA_PATH}/preprocess/species-list/"))
+    species_list_files = sorted([file for file in os.listdir(f"{DATA_PATH}/preprocess/species-list/") if f"taxid{taxid}" in file])
     if species_list_files:
         species_list_path = f"{DATA_PATH}/preprocess/species-list/{species_list_files[-1]}"
         latest_df = pd.read_csv(species_list_path, sep='\t')
