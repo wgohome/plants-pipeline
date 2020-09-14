@@ -18,7 +18,7 @@ import re
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
-from download import helpers, download_functions
+from download import helpers, download_functions, checkfiles
 from preprocess.despatch import fetch_runtable
 
 parser = argparse.ArgumentParser(description = 'This script despatches all species in job-list to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
@@ -44,10 +44,21 @@ def get_valid_jobs():
     ready_taxids = [taxid for taxid in taxids if (idx_exists(taxid) and runtable_exists(taxid))]
     return ready_taxids
 
+def log_status(to_write):
+    with open(STATUS_LOG_PATH, 'a') as f:
+        f.write(to_write)
+
 taxids = get_valid_jobs()
+STATUS_LOG_PATH = f"{DATA_PATH}/download/logs/status/{helpers.get_timestamp()}_job.log"
+log_status(f"Starting job for species: {taxids}\n")
 for taxid in taxids:
     # Validate runtable headers first
-    runs_df = helpers.read_runtable(f"taxid{taxid}")
     idx_path = f"{DATA_PATH}/download/idx/taxid{taxid}.idx"
-    download_functions.process_batch(runs_df, idx_path=idx_path, spe_id=f"taxid{taxid}", download_method=download_method, workers=workers, threads=threads)
-    print(f"Completed download for {taxid}")
+    for attempt in range(3):
+        completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=False)
+        download_functions.process_batch(incomplete_df, idx_path=idx_path, spe_id=f"taxid{taxid}", download_method=download_method, workers=workers, threads=threads)
+        completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=True)
+        log_status(f"Completed #{attempt} attempt for taxid{taxid}, Successful: {completed_df.shape[0]}, Unsuccessful: {incomplete_df.shape[0]}\n")
+        checkfiles.update_runinfo_main(taxid)
+        log_status("Updated runinfo main file\n")
+log_status("Completed all valid jobs\n")
