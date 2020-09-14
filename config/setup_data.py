@@ -17,10 +17,12 @@ dests = {
         'bash-tmp',
         'fastq-tmp',
         'kallisto-out',
+        'runinfo-main',
         'logs/initiation',
         'logs/runtime',
         'logs/progress',
-        'logs/runinfo'
+        'logs/runinfo',
+        'logs/status'
     ],
     'preprocess': [
         'ena-runtables',
