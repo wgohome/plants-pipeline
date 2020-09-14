@@ -79,21 +79,31 @@ def sra_exp_numbers(taxid, species):
 def make_species_report(name, taxid):
     master_list = query_species_list(name, taxid)
     print("Species list obtained")
-    for i in range(len(master_list)):
-    # master_list = master_list[:3]
-    # for i in range(3):
+    # 1. Check if last run of species report is terminated halfway
+    species_list_files = sorted(os.listdir(f"{DATA_PATH}/preprocess/species-list/"))
+    if species_list_files:
+        species_list_path = f"{DATA_PATH}/preprocess/species-list/{species_list_files[-1]}"
+        latest_df = pd.read_csv(species_list_path, sep='\t')
+        start = latest_df.shape[0]
+    else:
+        start = 0
+        species_list_path = f"{DATA_PATH}/preprocess/species-list/{iohelper.get_timestamp()}-taxid{taxid}.txt"
+    # 2. Query numbers for each species
+    for i in range(start, len(master_list)):
         rna_count, illumina_rna_count = sra_exp_numbers(master_list[i]['taxid'], master_list[i]['species'])
         master_list[i]['rna_count'] = rna_count
         master_list[i]['illumina_rna_count'] = illumina_rna_count
-        print(f"Done for #{i+1}/{len(master_list)}. {master_list[i]['species']}")
-    master_df = pd.DataFrame(master_list)
-    master_df.sort_values(by=['illumina_rna_count', 'rna_count'], ascending=False, inplace=True)
-    master_df.to_csv(f"{DATA_PATH}/preprocess/species-list/{iohelper.get_timestamp()}-taxid33090.txt", sep='\t', index=False)
-    print("File saved in pipeline-data/preprocess/species-list")
-    cds_df = master_df.copy()
-    cds_df['cds_link'] = None
-    cds_df.to_csv(f"{DATA_PATH}/preprocess/job-list/{iohelper.get_timestamp()}-taxid33090.txt", sep='\t', index=False)
-    print("TO EDIT: file saved in pipeline-data/preprocess/job-list, add cds links for species to be processed.")
+        df_tmp = pd.DataFrame([master_df[i]])
+        header = True if i == 0 else False
+        df_tmp.to_csv(species_list_path, sep='\t', index=False, mode='a', header=header)
+        print(f"Queried for #{i+1}/{len(master_list)}. {master_list[i]['species']}")
+    # 3. If all species in master_list queried, sort through by number of RNA experiments available
+    master_df = pd.from_csv(species_list_path, sep='\t')
+    if len(master_list) == master_df.shape[0]:
+        master_df.sort_values(by=['illumina_rna_count', 'rna_count'], ascending=False, inplace=True)
+        master_df['cds_link'] = None
+        master_df.to_csv(f"{DATA_PATH}/preprocess/job-list/{iohelper.get_timestamp()}-taxid{taxid}.txt", sep='\t', index=False)
+        print("TO EDIT: file saved in pipeline-data/preprocess/job-list, add cds links for species to be processed.")
     return master_df
 
 __all__ = ['make_species_report']
