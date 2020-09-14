@@ -93,7 +93,7 @@ def make_species_report(name, taxid):
         rna_count, illumina_rna_count = sra_exp_numbers(master_list[i]['taxid'], master_list[i]['species'])
         master_list[i]['rna_count'] = rna_count
         master_list[i]['illumina_rna_count'] = illumina_rna_count
-        df_tmp = pd.DataFrame([master_df[i]])
+        df_tmp = pd.DataFrame([master_list[i]])
         header = True if i == 0 else False
         df_tmp.to_csv(species_list_path, sep='\t', index=False, mode='a', header=header)
         print(f"Queried for #{i+1}/{len(master_list)}. {master_list[i]['species']}")
