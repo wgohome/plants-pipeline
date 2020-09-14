@@ -18,12 +18,13 @@ import pdb
 from config.constants import DATA_PATH
 from download import helpers
 
-parser = argparse.ArgumentParser(description = 'This script checks and sweep kallisto outputs and fastq, then creating a timestamped progress log file in pipeline-data/download/logs/progress dir.', epilog = 'By Mutwil Lab')
-parser.add_argument('-t', '--taxid', metavar='taxid',
-                    help='Enter the taxid of the species to be downloaded. For instance, Arabidopsis thaliana\'s taxid would be \'3702\'.',
-                    dest='taxid', type=int, required=True)
-args = parser.parse_args()
-taxid = args.taxid
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description = 'This script checks and sweep kallisto outputs and fastq, then creating a timestamped progress log file in pipeline-data/download/logs/progress dir.', epilog = 'By Mutwil Lab')
+    parser.add_argument('-t', '--taxid', metavar='taxid',
+                        help='Enter the taxid of the species to be downloaded. For instance, Arabidopsis thaliana\'s taxid would be \'3702\'.',
+                        dest='taxid', type=int, required=True)
+    args = parser.parse_args()
+    taxid = args.taxid
 
 def kallisto_present(runid):
     return os.path.exists(f"{DATA_PATH}/download/kallisto-out/{helpers.get_dirs(runid)}{runid}.zip")
