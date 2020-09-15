@@ -29,7 +29,7 @@ if __name__ == '__main__':
 def kallisto_present(runid):
     return os.path.exists(f"{DATA_PATH}/download/kallisto-out/{helpers.get_dirs(runid)}{runid}.zip")
 
-def log_progress(completed, incomplete):
+def log_progress(taxid, completed, incomplete):
     log_path = helpers.initiate_logfile('progress', ['runid', 'status'], spe=f"taxid{taxid}-")
     for runid in completed:
         to_write = f"{runid}\tcompleted\n"
@@ -43,7 +43,7 @@ def validate_latest_batch(taxid, to_log=False):
     completed = [runid for _, runid in runs_df['Run'].iteritems() if kallisto_present(runid)]
     incomplete = list(set(runs_df['Run']) - set(completed))
     if to_log:
-        log_progress(completed, incomplete)
+        log_progress(taxid, completed, incomplete)
     completed_df = runs_df[runs_df['Run'].isin(completed)]
     incomplete_df = runs_df[runs_df['Run'].isin(incomplete)]
     return completed_df, incomplete_df
