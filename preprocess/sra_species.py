@@ -98,7 +98,7 @@ def make_species_report(name, taxid):
         df_tmp.to_csv(species_list_path, sep='\t', index=False, mode='a', header=header)
         print(f"Queried for #{i+1}/{len(master_list)}. {master_list[i]['species']}")
     # 3. If all species in master_list queried, sort through by number of RNA experiments available
-    master_df = pd.from_csv(species_list_path, sep='\t')
+    master_df = pd.read_csv(species_list_path, sep='\t')
     if len(master_list) == master_df.shape[0]:
         master_df.sort_values(by=['illumina_rna_count', 'rna_count'], ascending=False, inplace=True)
         master_df['cds_link'] = None
