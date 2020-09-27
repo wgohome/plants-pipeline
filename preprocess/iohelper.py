@@ -55,7 +55,7 @@ def species_label(species):
     return f"taxid{taxid}"
 
 def species_name(taxid):
-    directory = f"{DATA_PATH}/preprocess/species-list"
+    directory = f"{DATA_PATH}/preprocess/job-list"
     latest_list = max(os.listdir(directory))
     df = pd.read_csv(f"{directory}/{latest_list}", sep='\t')
     species_name = df.loc[df['taxid'] == taxid]['species'].values[0]
