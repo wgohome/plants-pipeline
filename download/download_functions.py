@@ -168,7 +168,8 @@ def bash_loop(spe_id, runs_df, idx_path, init_log_path, runtime_log_path, worker
     run in parallel by bash command xargs"""
     runinfo_log = helpers.initiate_logfile('runinfo', ['runid', 'n_targets', 'n_bootstraps', 'n_processed', 'n_pseudoaligned', 'n_unique', 'p_pseudoaligned', 'p_unique', 'kallisto_version', 'index_version', 'start_time', 'call'], spe=f"{spe_id}-")
     jobfile_path = helpers.initiate_bash_job_file(spe_id)
-    for i, runid, layout, filesize in runs_df.itertuples():
+    for row in runs_df.itertuples():
+        i, runid, layout, filesize = row.Index, row.Run, row.LibraryLayout, row.Bytes
         p_route, up_route, p_file, up_file = helpers.get_fastq_routes(runid)
         attributes = {
             'runid': runid,
