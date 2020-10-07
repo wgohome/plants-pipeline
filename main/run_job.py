@@ -51,14 +51,15 @@ def log_status(to_write):
 taxids = get_valid_jobs()
 STATUS_LOG_PATH = f"{DATA_PATH}/download/logs/status/{helpers.get_timestamp()}_job.log"
 log_status(f"Starting job for species: {taxids}\n")
-for taxid in taxids:
+for i, taxid in enumerate(taxids):
     # Validate runtable headers first
     idx_path = f"{DATA_PATH}/download/idx/taxid{taxid}.idx"
-    for attempt in range(3):
+    for attempt in range(1,4):
         completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=False)
         download_functions.process_batch(incomplete_df, idx_path=idx_path, spe_id=f"taxid{taxid}", download_method=download_method, workers=workers, threads=threads)
         completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=True)
-        log_status(f"Completed #{attempt} attempt for taxid{taxid}, Successful: {completed_df.shape[0]}, Unsuccessful: {incomplete_df.shape[0]}\n")
+        log_status(f"Completed Attempt {attempt} for taxid{taxid}, Successful: {completed_df.shape[0]}, Unsuccessful: {incomplete_df.shape[0]}\n")
         checkfiles.update_runinfo_main(taxid)
-        log_status("Updated runinfo main file\n")
+        # log_status("Updated runinfo main file\n")
+        log_status(f"✓ {i+1}/{len(taxids)} species completed")
 log_status("Completed all valid jobs\n")
