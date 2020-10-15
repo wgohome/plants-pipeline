@@ -47,4 +47,4 @@ for row in job_df.itertuples():
     status, idx_path = process_cds(row.taxid, row.cds_link)
     # Redownload runtable anyway to get the latest
     fetch_runtable(taxid=row.taxid, db='sra')
-    fetch_runtable(taxid=row.taxid, db='ena')
+    # fetch_runtable(taxid=row.taxid, db='ena')

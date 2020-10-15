@@ -61,5 +61,5 @@ for i, taxid in enumerate(taxids):
         log_status(f"Completed Attempt {attempt} for taxid{taxid}, Successful: {completed_df.shape[0]}, Unsuccessful: {incomplete_df.shape[0]}\n")
         checkfiles.update_runinfo_main(taxid)
         # log_status("Updated runinfo main file\n")
-        log_status(f"✓ {i+1}/{len(taxids)} species completed")
+    log_status(f"✓ {i+1}/{len(taxids)} species completed\n")
 log_status("Completed all valid jobs\n")
