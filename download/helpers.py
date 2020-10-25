@@ -32,6 +32,8 @@ def write_log(to_write, log_path):
 
 def latest_runtable_path(spe_id):
     runtables = sorted([file for file in os.listdir(f"{DATA_PATH}/preprocess/sra-runtables/") if spe_id in file])
+    if runtables == []:
+        return None
     return f"{DATA_PATH}/preprocess/sra-runtables/{runtables[-1]}"
 
 def read_runtable(spe_id, runtable_path=None):

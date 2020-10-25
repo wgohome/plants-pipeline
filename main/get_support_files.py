@@ -16,7 +16,7 @@ import wget
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
-from download import download_functions
+from download import download_functions, helpers
 from preprocess.despatch import fetch_runtable
 
 # Go through latest job-list
@@ -45,6 +45,7 @@ def process_cds(taxid, cds_link):
 
 for row in job_df.itertuples():
     status, idx_path = process_cds(row.taxid, row.cds_link)
-    # Redownload runtable anyway to get the latest
-    fetch_runtable(taxid=row.taxid, db='sra')
-    # fetch_runtable(taxid=row.taxid, db='ena')
+    if not helpers.latest_runtable_path(f"taxid{row.taxid}"):
+        # Redownload runtable only if it doesnt exist for now
+        fetch_runtable(taxid=row.taxid, db='sra')
+        # fetch_runtable(taxid=row.taxid, db='ena')

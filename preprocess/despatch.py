@@ -57,7 +57,7 @@ def fetch_runtable(species=None, taxid=None, db='sra', annotate=False):
         ena_df.to_csv(ena_runtable_path, sep='\t', index=False)
         if annotate:
             match.annotate(ena_df, species, db='ena')
-    print(f"Downloaded {db} runtable for {species} ({spe_id}) 💉")
+    print(f"Downloaded {db} runtable for {species} ({spe_id}) 📥")
 
 if __name__ == '__main__':
     fetch_runtable(taxid=taxid, species=species, db=db, annotate=annotate)
