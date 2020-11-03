@@ -15,6 +15,7 @@ import pandas as pd
 import os
 import wget
 import re
+from time import time
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
@@ -50,16 +51,21 @@ def log_status(to_write):
 
 taxids = get_valid_jobs()
 STATUS_LOG_PATH = f"{DATA_PATH}/download/logs/status/{helpers.get_timestamp()}_job.log"
-log_status(f"Starting job for species: {taxids}\n")
-for i, taxid in enumerate(taxids):
+taxids_str = ', '.join([f"{i}:{taxid}" for i, taxid in enumerate(taxids, 1)])
+log_status(f"# Starting job for {len(taxids)} species.\n# Taxanomic IDs: {taxids_str}\n")
+log_status("index\ttaxid\tattempt\ttotal_downloaded\ttotal_not_downloaded\tfreshly_downloaded\ttime\n")
+for i, taxid in enumerate(taxids, 1):
     # Validate runtable headers first
     idx_path = f"{DATA_PATH}/download/idx/taxid{taxid}.idx"
     for attempt in range(1,4):
+        start = time()
         completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=False)
+        x0 = completed_df.shape[0]
+        if incomplete_df.shape[0] == 0:
+            continue
         download_functions.process_batch(incomplete_df, idx_path=idx_path, spe_id=f"taxid{taxid}", download_method=download_method, workers=workers, threads=threads)
         completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=True)
-        log_status(f"Completed Attempt {attempt} for taxid{taxid}, Successful: {completed_df.shape[0]}, Unsuccessful: {incomplete_df.shape[0]}\n")
         checkfiles.update_runinfo_main(taxid)
-        # log_status("Updated runinfo main file\n")
-    log_status(f"✓ {i+1}/{len(taxids)} species completed\n")
-log_status("Completed all valid jobs\n")
+        log_status(f"{i}\t{taxid}\t{attempt}\t{completed_df.shape[0]}\t{incomplete_df.shape[0]}\t{x0 - completed_df.shape[0]}\t{time()-start}\n")
+        # log_status(f"Completed Attempt {attempt} for taxid{taxid}, Successful: {completed_df.shape[0]}, Unsuccessful: {incomplete_df.shape[0]}\n")
+log_status("# Completed all valid jobs.\n")
