@@ -209,7 +209,7 @@ def process_batch(runs_df, idx_path, spe_id, download_method='ascp-bash', linear
         # Run the loop_fn in job_mode and pass other required parameters
         results = loop_fn(job_mode, runs_df, idx_path, init_log_path, runtime_log_path, workers, threads)
     batch_runtime = round(time.time() - batch_start, 2)
-    helpers.write_log(f"Total runtime\t{batch_runtime}\n", runtime_log_path)
+    helpers.write_log(f"# Total_runtime\t{batch_runtime}\n", runtime_log_path)
     # TODO: total runtime doesnt work when using ascp-bash method
 
 __all__ = ['process_batch', 'kallisto_index']
