@@ -8,7 +8,7 @@ This repository is found in [Github Repository](https://github.com/wirriamm/plan
 
 ## First setup
 
-Clone the repository to your machine. Ensure you are in the main plants-pipeline directory.
+Clone the repository to your machine. Ensure the working directory is in the main plants-pipeline directory.
 
 To setup this pipeline for the first time, create a virtual environment. Ensure you have installed 'Python 3.8' and 'pip 20.1.1'. Run the following command below. If your local 'Python 3.8' installation is aliased as python3, replace `python3.8` in the command below with `python3`. `virtualenv` can be replaced with any other Python environment management tools you prefer like `venv` which comes with the standard Python library.
 ```
@@ -21,20 +21,19 @@ To setup the directories for this project's data repository, run this command, r
 ```
 python3 config/setup_data.py -p /path/to/data/repository/
 ```
+A data directory will be created at `/path/to/data/repository/pipeline-data` if it does not already exists. If it exists, sub-directories that are missing will be created. The variable for `DATA_PATH` will then be updated as `/path/to/data/repository/pipeline-data` in `config/constants.py` file.
 
-Then, open `config/constants.py` file and edit the `ASPERA_SSH_KEY` and `DATA_PATH` variables accordingly based on your local machine. In general, `ASPERA_SSH_KEY` is located in a standard install path for Mac and another path for Linux.
-
-```
-DATA_PATH = "path/to/data/repository/plants-pipeline"
-ASPERA_SSH_KEY = "/Users/[your-username]/Applications/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For MacOS
-ASPERA_SSH_KEY = "/home/.aspera/cli/Aspera CLI/etc/asperaweb_id_dsa.openssh" # For Linux
-```
+Then, open `config/constants.py` file. Check that `DATA_PATH` is correct. Edit the `ASPERA_SSH_KEY` variable accordingly based on your local machine installation of Aspera ascp.
+For linux machines, it is usually at:
+`ASPERA_SSH_KEY = "/home/user/.aspera/cli/etc/asperaweb_id_dsa.openssh"`
+For Macintosh, it is usally at:
+`ASPERA_SSH_KEY = "/Users/user/Applications/Aspera CLI/etc/asperaweb_id_dsa.openssh"`
 
 ## For each subsequent runs
 
 ### Set up environment and dependencies
 
-Begin by entering the main directory of this pipeline, which is `plants-pipeline` if you cloned from this Github repository. 
+Begin by entering the main directory of this pipeline, which is `plants-pipeline` if you cloned from this Github repository.
 ```cd /path/to/plants-pipeline```
 
 Run these commands to set up the environment for each new session.
@@ -121,7 +120,7 @@ Call the `despatch.py` script with the following arguments.
 
 For example, some possible commands are:
 
-**Main use case:** 
+**Main use case:**
 ```
 python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp-bash -w 20
 ```

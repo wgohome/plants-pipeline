@@ -30,4 +30,4 @@ export $PATH
 echo "\$PATH exported, 'kallisto' and 'ascp' can be called from the CLI"
 
 # Install chromedriver
-sudo apt-get install chromium-chromedriver
+# sudo apt-get install chromium-chromedriver
