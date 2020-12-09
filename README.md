@@ -1,14 +1,16 @@
-# Plants Transcriptomics Pipeline
+# Tera Transcriptomics Pipeline
 
-**NTU Plants Systems Biology and Evolution Laboratory** ([Mutwil's Lab](https://www.plant.tools))
+By ([**NTU Plants Systems Biology and Evolution Laboratory**](https://www.plant.tools))
 
 This repository is found in [Github Repository](https://github.com/wirriamm/plants-pipeline). Do create pull requests for issues/bugs and feature requests.
 
 [Contact me](mailto:will0046@e.ntu.edu.sg) for feedback.
 
-## First setup
+## A. First setup
 
 Clone the repository to your machine. Ensure the working directory is in the main plants-pipeline directory.
+
+### A1. Setting up Python environment
 
 To setup this pipeline for the first time, create a virtual environment. Ensure you have installed 'Python 3.8' and 'pip 20.1.1'. Run the following command below. If your local 'Python 3.8' installation is aliased as python3, replace `python3.8` in the command below with `python3`. `virtualenv` can be replaced with any other Python environment management tools you prefer like `venv` which comes with the standard Python library.
 ```
@@ -17,13 +19,30 @@ pip install --upgrade pip
 pip install -r config/requirements.txt
 ```
 
+### A2. Setting data path
+
 To setup the directories for this project's data repository, run this command, replacing `path/to/data/repository/` with your desired path. The pipeline's main data repository named `pipeline-data` will be stored within this specified directory. `path/to/data/repository/` should be separate from this repository's `plants-pipeline` directory and should not be tracked by this repository's version control.
 ```
 python3 config/setup_data.py -p /path/to/data/repository/
 ```
 A data directory will be created at `/path/to/data/repository/pipeline-data` if it does not already exists. If it exists, sub-directories that are missing will be created. The variable for `DATA_PATH` will then be updated as `/path/to/data/repository/pipeline-data` in `config/constants.py` file.
 
-Then, open `config/constants.py` file. Check that `DATA_PATH` is correct. Edit the `ASPERA_SSH_KEY` variable accordingly based on your local machine installation of Aspera ascp.
+Then, open `config/constants.py` file. Check that `DATA_PATH` is correct.
+
+### A3. Aspera download
+
+To download Aspera ascp program, run our setup script:
+
+For MacOS,
+```
+source config/setup_mac.sh
+```
+For Linux,
+```
+source config/setup_lin.sh
+```
+
+In `config/constants.py` file, also edit the `ASPERA_SSH_KEY` variable accordingly based on your local machine installation of Aspera ascp.
 
 For linux machines, it is usually at:
 `ASPERA_SSH_KEY = "/home/user/.aspera/cli/etc/asperaweb_id_dsa.openssh"`
@@ -31,11 +50,14 @@ For linux machines, it is usually at:
 For Macintosh, it is usally at:
 `ASPERA_SSH_KEY = "/Users/user/Applications/Aspera CLI/etc/asperaweb_id_dsa.openssh"`
 
+### A4. Other dependencies for web scraping
+
 Then, ensure that your machine has the following programs installed
 - chromium
 - chromedriver (compatible with your version of chromium)
 
-## For each subsequent runs
+
+## B. For each subsequent run of the pipeline
 
 ### Set up environment and dependencies
 
@@ -60,9 +82,9 @@ For Linux,
 source config/setup_lin.sh
 ```
 
-## Bulk Run
+## C. Bulk Run
 
-### 1. Get species list
+### C1. Get species list
 ```
 python main/get_species_list.py -n viridiplantae -t 33090
 ```
@@ -73,13 +95,15 @@ The species list will be found in `{DATA_PATH}/preprocess/species-list/` directo
 
 The same list will also be foind in `{DATA_PATH}/preprocess/job-list/` directory. This tsv file is to be editted by the user. For species to be downloaded, user can input the ftp/http url to the cds file for the species under the `cds_link` column. For species that the user does not want to download (number of experiments too low), the user can delete the row from this file or just leave the field under `cds_link` blank.
 
-### 2. Download cds and runtables, create kallisto index
+### C2. Download cds and runtables, create kallisto index
 ```
 python main/get_support_files.py
 ```
 This script will run based on the latest timestamped file (edited with `cds_link`) in `{DATA_PATH}/preprocess/job-list/`.
 
-### 3. Running the download job
+Note that occassionally, NCBI website does face lagging server, therefore web scraping may fail. In that case, rerun this segment, or try again another day.
+
+### C3. Running the download job
 ```
 nohup python main/run_job.py -m ascp-bash -w 20 -t 2 &
 ```
@@ -90,9 +114,19 @@ The compulsory arguments are:
 
 `nohup` is used to run the job in the background.
 
-## Running for one species
+### C4. Checking the download status
 
-### 2. Get runtables
+_To be updated_
+
+### C5. Reinitiating download
+
+
+### C6. Extracting run info tables and tpm matrices
+
+
+## D. Small job: Running for just one species
+
+### D1. Get runtables
 
 Runtables can be obtained from NCBI's SRA or ENA. The runtables will be saved in `pipeline-data/preprocess/sra-runtables` and `pipeline-data/preprocess/ena-runtables`. Files are labelled by their taxanomic id.
 
@@ -114,7 +148,7 @@ The available options are:
 Organ annotations (if activated) will be stored in `data-pipeline/preprocess/sra-annotations` and `data-pipeline/preprocess/ena-annotations` respectively.
 
 
-### 3. Download one species
+### D2. Download one species
 
 Call the `despatch.py` script with the following arguments.
 - `-s` is for the 3 letter alias for the species name. For example, Arabidopsis thaliana should have the alias 'Ath'.
@@ -144,9 +178,9 @@ nohup python download/despatch.py -s Ath -c Ath.cds.fasta -m ascp-bash -w 20 &
 ```
 The stdout will be found in the file 'nohup.out'. However, due to multi-processing, the stdout might not make much sense. Instead, the log files can be more informative. If ascp-bash method is selected, there will be less stdout due to the use of xargs to spawn multiprocesses.
 
-### Checking the logs
+### D3. Checking the logs
 
-Once completed, the time for download could be checked from log file in pipeline-data/download/logs/time, labelled by the timestamp the download was initiated.
+Once completed, the time for download could be checked from log file in pipeline-data/download/logs/runtime, labelled by the time the download was initiated.
 
 Once the download have completed, two logfiles can be checked. Logfiles' names begin with a timestamp in the format 'YYYYMMDD-HHMMSS', indicating the time at which the download batch was initiated.
 
@@ -154,7 +188,9 @@ Once the download have completed, two logfiles can be checked. Logfiles' names b
 - `initiation` directory stores the files containing the timestamp at which each Run ID in the batch was initiated.
 - `runtime` directory stores the files containing the timestamp, library layout and download error type (if any) of each Run ID. However, if the child process for downloading the RunID was broken, it will not be logged in this file. The Run ID should still be found in the logfile from `initiation`.
 
-### 4. Checking the kallisto output files and reinitiating new batch for missing files
+_To be updated_
+
+### D4. Checking the kallisto output files and reinitiating new batch for missing files
 
 After downloading a batch, to check the successful downloads against the Run IDs in the runtable, run the following file.
 - `-s` specifies the species three-letter alias
@@ -169,6 +205,6 @@ This script will:
 - Remove fastq files of successful downloads from `pipline-data/download/fastq-tmp`
 - Update a new log file in `pipline-data/download/logs/progress/[timestamp]-[spe]-progress.log`
 
-### 5. Redownloading failed Run IDs
+### D5. Redownloading failed Run IDs
 
 _To be updated_
