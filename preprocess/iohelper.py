@@ -56,7 +56,6 @@ def species_label(species):
     latest_list = max(os.listdir(directory))
     df = pd.read_csv(f"{directory}/{latest_list}", sep='\t')
     taxid = df.loc[df['species'].str.lower() == species.lower()]['taxid'].values[0]
-    pdb.set_trace()
     return f"taxid{taxid}"
 
 def species_name(taxid):
