@@ -24,10 +24,16 @@ python3 config/setup_data.py -p /path/to/data/repository/
 A data directory will be created at `/path/to/data/repository/pipeline-data` if it does not already exists. If it exists, sub-directories that are missing will be created. The variable for `DATA_PATH` will then be updated as `/path/to/data/repository/pipeline-data` in `config/constants.py` file.
 
 Then, open `config/constants.py` file. Check that `DATA_PATH` is correct. Edit the `ASPERA_SSH_KEY` variable accordingly based on your local machine installation of Aspera ascp.
+
 For linux machines, it is usually at:
 `ASPERA_SSH_KEY = "/home/user/.aspera/cli/etc/asperaweb_id_dsa.openssh"`
+
 For Macintosh, it is usally at:
 `ASPERA_SSH_KEY = "/Users/user/Applications/Aspera CLI/etc/asperaweb_id_dsa.openssh"`
+
+Then, ensure that your machine has the following programs installed
+- chromium
+- chromedriver (compatible with your version of chromium)
 
 ## For each subsequent runs
 
