@@ -13,6 +13,7 @@ if __name__ == '__main__':
 import os
 import datetime as dt
 import pandas as pd
+import pdb
 # Local imports
 from config.constants import DATA_PATH
 from preprocess.ena import get_taxanomic_id
@@ -51,7 +52,11 @@ def species_shortform(species):
 
 def species_label(species):
     '''3702 => taxid3702'''
-    taxid = get_taxanomic_id(species)
+    directory = f"{DATA_PATH}/preprocess/job-list"
+    latest_list = max(os.listdir(directory))
+    df = pd.read_csv(f"{directory}/{latest_list}", sep='\t')
+    taxid = df.loc[df['species'].str.lower() == species.lower()]['taxid'].values[0]
+    pdb.set_trace()
     return f"taxid{taxid}"
 
 def species_name(taxid):
