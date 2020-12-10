@@ -1,6 +1,6 @@
 # Tera Transcriptomics Pipeline
 
-By ([**NTU Plants Systems Biology and Evolution Laboratory**](https://www.plant.tools))
+By [**NTU Plants Systems Biology and Evolution Laboratory**](https://www.plant.tools)
 
 This repository is found in [Github Repository](https://github.com/wirriamm/plants-pipeline). Do create pull requests for issues/bugs and feature requests.
 
@@ -56,6 +56,13 @@ Then, ensure that your machine has the following programs installed
 - chromium
 - chromedriver (compatible with your version of chromium)
 
+### A5. Dotenv file
+
+Create a `.env` file in the `plants-pipeline` directory, speciying your own NCBI API key as:
+```
+NCBI_API_KEY = "{enter_the_key}"
+```
+NCBI API Kay can be obtained by signing up for an NCBI account. Guides can be found [here](https://www.ncbi.nlm.nih.gov/books/NBK25497/#top)
 
 ## B. For each subsequent run of the pipeline
 
