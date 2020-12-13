@@ -43,6 +43,7 @@ dests = {
         'sra-runtables',
         'ena-annotations',
         'sra-annotations',
+        'sra-annotation2s',
         'species-list',
         'job-list'
     ],

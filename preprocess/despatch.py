@@ -16,7 +16,7 @@ import argparse
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
-from preprocess import match, sra, ena, iohelper
+from preprocess import match, sra, ena, iohelper, match2
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'This script downloads the runtable from SRA or ENA to pipeline-data/preprocess directory.', epilog = 'By Mutwil Lab')
@@ -30,11 +30,13 @@ if __name__ == '__main__':
                         help='The choice of database source for the runtable, either \'sra\' (from NCBI) or \'ena\' from ENA.',
                         dest='database', type=str, required=True)
     parser.add_argument('-a', '--annotate', action='store_true', default=False, required=False, dest='annotate', help="Include this optional tag if the runtable is supposed to be annotated with organ labels.")
+    parser.add_argument('-b', '--annotate2', action='store_true', default=False, required=False, dest='annotate2', help="Include this optional tag if the runtable is supposed to be annotated with organ labels by Method 2.")
     args = parser.parse_args()
     species = args.species
     taxid = args.taxid
     db = args.database.lower()
     annotate = args.annotate
+    annotate2 = args.annotate2
     if (taxid == None) and (species == None):
         raise Exception("Minimum requirement: enter either species or taxid argument.")
 
@@ -51,6 +53,8 @@ def fetch_runtable(species=None, taxid=None, db='sra', annotate=False):
         sra_df = sra.process_sra_runtable(taxid, species) # Downloads SRA runtable, returns df
         if annotate:
             match.annotate(sra_df, species, db='sra') # Saves annotation file
+        if annotate2:
+            match2.annotate2(sra_df, species, db='sra')
     elif db == 'ena':
         ena_df = ena.get_ena_runtable(taxid)
         ena_runtable_path = iohelper.make_filename(db='ena', filetype='runtable', spe_id=spe_id)

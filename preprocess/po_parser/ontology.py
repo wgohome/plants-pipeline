@@ -1,8 +1,11 @@
 from itertools import cycle
 import networkx as nx
 import re
+from nltk.stem.snowball import SnowballStemmer
 # local imports
 from preprocess.po_parser.term import Term
+
+stemmer = SnowballStemmer(language='english')
 
 class Ontology():
     def __init__(self, string):
@@ -90,3 +93,9 @@ class Ontology():
             return term1
         else:
             return term2
+
+    def po_to_stems(self):
+        p2s = {}
+        for term in self.terms:
+            p2s[term.name[0]] = [stemmer.stem(word) for word in term.name[0].split()]
+        return p2s

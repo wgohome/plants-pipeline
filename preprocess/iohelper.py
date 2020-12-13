@@ -28,10 +28,10 @@ def make_filename(db, filetype='runtable', spe_id=None, species=None):
         spe_id = species_label(species)
     return f"{DATA_PATH}/preprocess/{db}-{filetype}s/{get_timestamp()}-{spe_id}_{db}_{filetype}.txt"
 
-def create_annotation_file(species, db):
+def create_annotation_file(species, db, filetype='annotation'):
     db = db.lower()
     spe_id = species_label(species)
-    out_path = make_filename(db, filetype='annotation', spe_id=spe_id)
+    out_path = make_filename(db, filetype=filetype, spe_id=spe_id)
     with open(out_path, 'w') as f:
         f.write("")
     return out_path

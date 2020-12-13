@@ -78,6 +78,11 @@ def get_sra_runtable(tax_id, species, query_attributes=default_attributes):
 
 def read_sra_runtable(runtable_path, query_attributes=default_attributes):
     sra_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False, dtype='string')
+    # Remove non RNA-seq
+    sra_df = sra_df[sra_df['Assay Type'] == 'RNA-Seq']
+    # sra_df.drop(columns=['Assay Type'], inplace=True)
+    # sra_df['Bytes'] = sra_df.loc[:,'Bytes'].fillna('0')
+    # sra_df['Bytes'] = sra_df.loc[:,'Bytes'].astype(int)
     return sra_df
 
 # Local functions
