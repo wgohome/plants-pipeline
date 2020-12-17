@@ -18,6 +18,7 @@ import numpy as np
 from nltk.stem.snowball import SnowballStemmer
 import pdb
 # Relative imports
+from config.constants import DATA_PATH
 from preprocess.po_parser.po import po # po is an Ontology class instance
 from preprocess import iohelper
 from download import helpers
