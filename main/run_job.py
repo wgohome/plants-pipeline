@@ -66,6 +66,6 @@ for i, taxid in enumerate(taxids, 1):
         download_functions.process_batch(incomplete_df, idx_path=idx_path, spe_id=f"taxid{taxid}", download_method=download_method, workers=workers, threads=threads)
         completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=True)
         checkfiles.update_runinfo_main(taxid)
-        log_status(f"{i}\t{taxid}\t{attempt}\t{completed_df.shape[0]}\t{incomplete_df.shape[0]}\t{x0 - completed_df.shape[0]}\t{time()-start}\n")
+        log_status(f"{i}\t{taxid}\t{attempt}\t{completed_df.shape[0]}\t{incomplete_df.shape[0]}\t{completed_df.shape[0]-x0}\t{time()-start}\n")
         # log_status(f"Completed Attempt {attempt} for taxid{taxid}, Successful: {completed_df.shape[0]}, Unsuccessful: {incomplete_df.shape[0]}\n")
 log_status("# Completed all valid jobs.\n")
