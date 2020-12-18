@@ -123,15 +123,19 @@ The compulsory arguments are:
 
 ### C4. Checking the download status
 
-_To be updated_
+Download status can be checked from `pipeline-data/download/logs/status/YYYYMMDD-HHMMSS_job.log`. This file will be updated as the download proceeds.
 
 ### C5. Reinitiating download
 
 
 ### C6. Extracting run info tables and tpm matrices
 
+After bulk download and/or re-initiating bulk downloads to a satisfactory coverage of experiments, TPM matrices per species can be extracted from the kallisto output as such:
+```
+python main/update_all_tpm_matrices.py
+```
 
-## D. Small job: Running for just one species
+## D. Small jobs: Running for just one species
 
 ### D1. Get runtables
 
