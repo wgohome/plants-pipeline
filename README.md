@@ -101,15 +101,15 @@ python main/get_species_list.py -n viridiplantae -t 33090
 - `-n` is for the taxanomic name of the family or any other ranks above species.
 - `-t` is for the taxanomic id of that name.
 
-The species list will be found in `{DATA_PATH}/preprocess/species-list/` directory.
+The species list will be found in `pipeline-data/preprocess/species-list/` directory.
 
-The same list will also be foind in `{DATA_PATH}/preprocess/job-list/` directory. This tsv file is the one to be editted by the user in an Excel or equivalent interface. For the species to be downloaded, user can input the ftp/http url to the cds file for the species under the `cds_link` column. For species that the user does not want to download (number of experiments too low), the user can delete the row from this file or just leave the field under `cds_link` blank. Only species rows with a filled CDS link will be processed by the pipeline.
+The same list will also be foind in `pipeline-data/preprocess/job-list/` directory. This tsv file is the one to be editted by the user in an Excel or equivalent interface. For the species to be downloaded, user can input the ftp/http url to the cds file for the species under the `cds_link` column. For species that the user does not want to download (number of experiments too low), the user can delete the row from this file or just leave the field under `cds_link` blank. Only species rows with a filled CDS link will be processed by the pipeline.
 
 ### C2. Download cds and runtables, create kallisto index
 ```
 python main/get_support_files.py
 ```
-This script will run based on the latest timestamped file in `{DATA_PATH}/preprocess/job-list/`. (It is the file in which you have added the urls under `cds_link` column.) 
+This script will run based on the latest timestamped file in `pipeline-data/preprocess/job-list/`. (It is the file in which you have added the urls under `cds_link` column.) 
 
 Note that occassionally, NCBI website does face a lagging server, therefore web scraping may fail. In that case, rerun this segment, or try again another day.
 
