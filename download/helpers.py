@@ -39,6 +39,8 @@ def latest_runtable_path(spe_id):
 def read_runtable(spe_id, runtable_path=None):
     if runtable_path == None:
         runtable_path = latest_runtable_path(spe_id)
+    if runtable_path == None:
+        return None
     runs_df = pd.read_csv(runtable_path, sep=',', header=0, index_col=False,
         dtype='string', usecols=['Run', 'Bytes', 'LibraryLayout', 'Assay Type'])
     # Remove non RNA-seq
