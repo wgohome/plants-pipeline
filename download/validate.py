@@ -18,6 +18,10 @@ import pdb
 from config.constants import DATA_PATH
 import helpers
 
+# DEPRECATED ###################################################################
+# DEPRECATED ###################################################################
+# DEPRECATED ###################################################################
+
 parser = argparse.ArgumentParser(description = 'This script checks and sweep kallisto outputs and fastq, then creating a timestamped progress log file in pipeline-data/download/logs/progress dir.', epilog = 'By Mutwil Lab')
 parser.add_argument('-s', '--species', nargs=1, metavar='species_alias',
                     help='Enter the species alias to be downloaded. For instance, Arabidopsis thaliana\'s species alias would be \'Ath\'.',
