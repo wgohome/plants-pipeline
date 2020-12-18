@@ -48,7 +48,7 @@ dests = {
         'job-list'
     ],
     'postprocess': [
-        ''
+        'tpm-matrices'
     ]
 }
 
