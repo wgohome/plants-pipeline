@@ -69,7 +69,10 @@ A personal NCBI API Key can be obtained by signing up for an NCBI account. Guide
 ### Set up environment and dependencies
 
 Begin by entering the main directory of this pipeline, which is `plants-pipeline` if you cloned from this Github repository.
-```cd /path/to/plants-pipeline```
+
+```
+cd /path/to/plants-pipeline
+```
 
 Run these commands to set up the environment for each new session.
 
