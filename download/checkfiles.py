@@ -41,7 +41,7 @@ def log_progress(taxid, completed, incomplete):
 def validate_latest_batch(taxid, to_log=False):
     runs_df = helpers.read_runtable(f"taxid{taxid}")
     if runs_df.empty == True:
-        return None, None
+        return pd.DataFrame(), pd.DataFrame()
     completed = [runid for _, runid in runs_df['Run'].iteritems() if kallisto_present(runid)]
     incomplete = list(set(runs_df['Run']) - set(completed))
     if to_log:
