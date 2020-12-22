@@ -36,8 +36,8 @@ if __name__ == '__main__':
 taxids = run_job.get_valid_jobs()
 if newonly:
     files = os.listdir(f"{DATA_PATH}/postprocess/tpm-matrices")
-    existing_runids = [int(re.findall("taxid(\d{4,6})", file)[0]) for file in files]
-    taxids = list(set(taxids) - set(existing_runids))
+    existing_taxids = [int(re.findall("taxid(\d{4,6})", file)[0]) for file in files]
+    taxids = list(set(taxids) - set(existing_taxids))
 
 if threads == 0:
     for taxid in taxids:
