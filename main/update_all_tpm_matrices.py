@@ -23,14 +23,14 @@ from main import run_job
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'This script gets all downloaded experiments for all species, and creates a tpm matrices for it in data-pipeline/post-process/tpm-matrices.', epilog = 'By Mutwil Lab')
-    parser.add_argument('-w', '--workers', metavar='workers',
-                        help='Enter the number of concurrent worker processes to be used.',
-                        dest='workers', type=int, required=True)
+    parser.add_argument('-t', '--threads', metavar='threads',
+                        help='Enter the number of concurrent threads to be used.',
+                        dest='threads', type=int, required=True)
     parser.add_argument('-n', '--newonly', action='store_true', default=False,
                         help='Include this optional tag if you only want to process species whose matrices does not yet exist.',
                         dest='newonly', required=False)
     args = parser.parse_args()
-    workers = args.workers
+    threads = args.threads
     newonly = args.newonly
 
 taxids = run_job.get_valid_jobs()
@@ -39,14 +39,14 @@ if newonly:
     existing_runids = [int(re.findall("taxid(\d{4,6})", file)[0]) for file in files]
     taxids = list(set(taxids) - set(existing_runids))
 
-if workers == 0:
+if threads == 0:
     for taxid in taxids:
         pull_tpm_matrix.write_tpm_matrix(taxid)
-elif workers > 0:
-    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
+elif threads > 0:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         futures = [executor.submit(pull_tpm_matrix.write_tpm_matrix, taxid) for taxid in taxids]
         results = []
         for f in concurrent.futures.as_completed(futures):
             results.append(f.result())
 else:
-    raise Exception("Number of workers invalid")
+    raise Exception("Number of threads invalid")
