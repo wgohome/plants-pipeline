@@ -66,6 +66,7 @@ def write_tpm_matrix(taxid):
     else:
         tpm_matrix.to_csv(tpm_matrix_name(taxid), sep='\t')
         print(f"TPM matrix written/updated for taxid{taxid}")
+    return tpm_matrix.shape
 
 if __name__ == '__main__':
     write_tpm_matrix(taxid)
