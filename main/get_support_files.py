@@ -15,6 +15,7 @@ import pandas as pd
 import os
 import wget
 import concurrent.futures
+import warnings
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
@@ -62,11 +63,17 @@ def download_job(taxid, cds_link):
     if newonly:
         # Redownload runtable only if it doesnt exist for now
         if not helpers.latest_runtable_path(f"taxid{taxid}"):
+            try:
+                fetch_runtable(taxid=taxid, db='sra')
+                # fetch_runtable(taxid=taxid, db='ena')
+            except:
+                warnings.warn("Failed to download runtable.")
+    else:
+        try:
             fetch_runtable(taxid=taxid, db='sra')
             # fetch_runtable(taxid=taxid, db='ena')
-    else:
-        fetch_runtable(taxid=taxid, db='sra')
-        # fetch_runtable(taxid=taxid, db='ena')
+        except:
+            warnings.warn("Failed to download runtable.")
     return status
 
 if threads == 0:
@@ -80,3 +87,16 @@ elif threads > 0:
             results.append(f.result())
 else:
     raise Exception("Number of threads invalid")
+
+taxids = set(job_df['taxid'].tolist())
+
+files = os.listdir(f"{DATA_PATH}/download/idx")
+idxs = [int(re.findall("taxid(\d{4,6})", file)[0]) for file in files]
+idxs = set(idxs)
+
+files = os.listdir(f"{DATA_PATH}/preprocess/sra-runtables")
+runtables = [int(re.findall("taxid(\d{4,6})", file)[0]) for file in files]
+runtables = set(runtables)
+
+print(f"Succesfully have {len(idxs)}/{len(taxids)} species with kallisto index processed.")
+print(f"Successfully have {len(runtables)}/{len(taxids)} species with runtables downlaoded at least once.")
