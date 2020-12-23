@@ -40,7 +40,7 @@ if __name__ == '__main__':
     if (taxid == None) and (species == None):
         raise Exception("Minimum requirement: enter either species or taxid argument.")
 
-def fetch_runtable(species=None, taxid=None, db='sra', annotate=False):
+def fetch_runtable(species=None, taxid=None, db='sra', annotate=False, annotate2=False):
     if (taxid == None) and (species == None):
         raise Exception("‼️ Minimum requirement: enter either species or taxid argument.")
     elif taxid == None:
