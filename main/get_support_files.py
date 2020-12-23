@@ -71,15 +71,7 @@ def download_job(taxid, cds_link):
 
 if threads == 0:
     for row in job_df.itertuples():
-        status, idx_path = process_cds(row.taxid, row.cds_link)
-        if newonly:
-            # Redownload runtable only if it doesnt exist for now
-            if not helpers.latest_runtable_path(f"taxid{row.taxid}"):
-                fetch_runtable(taxid=row.taxid, db='sra')
-                # fetch_runtable(taxid=row.taxid, db='ena')
-        else:
-            fetch_runtable(taxid=row.taxid, db='sra')
-            # fetch_runtable(taxid=row.taxid, db='ena')
+        _ = download_job(row.taxid, row.cds_link)
 elif threads > 0:
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         futures = [executor.submit(download_job, row.taxid, row.cds_link) for row in job_df.itertuples()]
