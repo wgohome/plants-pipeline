@@ -9,6 +9,7 @@ if __name__ == '__main__':
     sys.path.insert(0, parent_module)
 ################################################################################
 
+import argparse
 import numpy as np
 import pandas as pd
 import os
@@ -18,6 +19,18 @@ import pdb
 from config.constants import DATA_PATH
 from download import download_functions, helpers
 from preprocess.despatch import fetch_runtable
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description = 'This script gets all CDS and runtables for all species.', epilog = 'By Mutwil Lab')
+    parser.add_argument('-t', '--threads', metavar='threads',
+                        help='Enter the number of concurrent threads to be used.',
+                        dest='threads', type=int, required=True)
+    parser.add_argument('-n', '--newonly', action='store_true', default=False,
+                        help='Include this optional tag if you only want to download species whose runtables do not yet exist.',
+                        dest='newonly', required=False)
+    args = parser.parse_args()
+    threads = args.threads
+    newonly = args.newonly
 
 # Go through latest job-list
 job_list_dir = f"{DATA_PATH}/preprocess/job-list/"
@@ -43,9 +56,34 @@ def process_cds(taxid, cds_link):
     print(f"✓ Created kallisto index for taxid{taxid}, removed CDS")
     return 0, idx_path
 
-for row in job_df.itertuples():
-    status, idx_path = process_cds(row.taxid, row.cds_link)
-    if not helpers.latest_runtable_path(f"taxid{row.taxid}"):
+def download_job(taxid, cds_link):
+    status, idx_path = process_cds(taxid, cds_link)
+    if newonly:
         # Redownload runtable only if it doesnt exist for now
-        fetch_runtable(taxid=row.taxid, db='sra')
-        # fetch_runtable(taxid=row.taxid, db='ena')
+        if not helpers.latest_runtable_path(f"taxid{taxid}"):
+            fetch_runtable(taxid=taxid, db='sra')
+            # fetch_runtable(taxid=taxid, db='ena')
+    else:
+        fetch_runtable(taxid=taxid, db='sra')
+        # fetch_runtable(taxid=taxid, db='ena')
+    return status
+
+if threads == 0:
+    for row in job_df.itertuples():
+        status, idx_path = process_cds(row.taxid, row.cds_link)
+        if newonly:
+            # Redownload runtable only if it doesnt exist for now
+            if not helpers.latest_runtable_path(f"taxid{row.taxid}"):
+                fetch_runtable(taxid=row.taxid, db='sra')
+                # fetch_runtable(taxid=row.taxid, db='ena')
+        else:
+            fetch_runtable(taxid=row.taxid, db='sra')
+            # fetch_runtable(taxid=row.taxid, db='ena')
+elif threads > 0:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+        futures = [executor.submit(download_job, row.taxid, row.cds_link) for row in job_df.itertuples()]
+        results = []
+        for f in concurrent.futures.as_completed(futures):
+            results.append(f.result())
+else:
+    raise Exception("Number of threads invalid")
