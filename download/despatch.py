@@ -15,51 +15,43 @@ import pandas as pd
 import pdb
 # Relative imports
 from config.constants import DATA_PATH
-from download.download_functions import process_batch, kallisto_index
+from download import download_functions, checkfiles
 import helpers
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
-parser.add_argument('-t', '--taxid', metavar='taxid',
+parser.add_argument('-s', '--taxid', metavar='taxid',
                         help='Enter the taxanomic id of the species to be downloaded, in quotes. For example, "3702" for Arabidopsis thaliana.',
                         dest='taxid', type=int, required=False)
-# parser.add_argument('-s', '--species', nargs=1, metavar='species_id',
-#                     help='Enter the species id to be downloaded. For instance, Arabidopsis thaliana\'s species id would be \'taxid3702\'.',
-#                     dest='spe_id', type=str, required=True)
-# parser.add_argument('-c', '--cds', nargs=1, metavar='cds_filename',
-#                     help='Enter the file name of the cds .fasta file to use. Do not include the full path, just the filename. It is expected that cds file is places in pipeline-data/download/cds directory.',
-#                     dest='cds_filename', type=str, required=True)
 parser.add_argument('-m', '--method', nargs=1, metavar='download_method',
-                    help="This script allows for download methods: 'ascp-bash', 'ascp-python' or 'curl'.", choice=['ascp-bash', 'ascp-python', 'curl'],
+                    help="This script allows for download methods: 'ascp-bash', 'ascp-python' or 'curl'.", choices=['ascp-bash', 'ascp-python', 'curl'],
                     dest='download_method', type=str, required=True)
 parser.add_argument('-l', '--linearmode', action='store_true', default=False, required=False, dest='linearmode', help="Include this optional tag if download is to be in linear mode, else default will be parallel processes. If --method specified is ascp-bash")
 parser.add_argument('-w', '--workers',nargs=1, metavar='num_workers', default=['8'], required=False, dest='workers', help="Optional. Specify the number of workers to spawn for multiple process if `-l` is not chosen. Otherwise, this argument will be ignored..")
 parser.add_argument('-t', '--threads',nargs=1, metavar='num_threads', default=['2'], required=False, dest='threads', help="Optional. Specify the number of threads to use for each kallisto quantification call.")
 args = parser.parse_args()
-# spe_id = args.spe_id[0]
 taxid = args.taxid
-# cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
-# idx_path = f"{DATA_PATH}/download/idx/{spe_id}.idx"
-runtable_path = helpers.latest_runtable_path(spe_id)
 download_method = args.download_method[0].lower()
 linearmode = args.linearmode
 workers = int(args.workers[0])
 threads = int(args.threads[0])
 
-assert os.path.exists(runtable_path), f"The runtable for {spe_id} is not in pipeline-data/preprocess/sra-runtables."
+idx_path = f"{DATA_PATH}/download/idx/taxid{taxid}.idx"
+cds_path = f"{DATA_PATH}/download/cds/taxid{taxid}.cds.fasta"
+runtable_exists = lambda taxid: len([file for file in os.listdir(f"{DATA_PATH}/preprocess/sra-runtables/") if f"taxid{taxid}" in file])
 
-if download_method not in ['ascp-bash', 'ascp-python', 'curl']:
-    raise Exception("--method specified is invalid. Only accepts 'ascp-bash', 'ascp-python' or 'curl'")
-
-# TODO: Make it robust to SRA inconsistent header names
-
-runs_df = helpers.read_runtable(spe_id, runtable_path)
-runs_df['Bytes'] = runs_df.loc[:,'Bytes'].fillna('0')
-runs_df['Bytes'] = runs_df.loc[:,'Bytes'].astype(int)
-
-if __name__ == '__main__':
-    # Create index file for species if not present
-    if not os.path.exists(idx_path):
-        assert os.path.exists(cds_path), f"The CDS for {spe_id} is not in pipeline-data/download/cds."
-        runtime, exit_code, _ = kallisto_index(idx_path=idx_path, cds_path=cds_path)
-    # Run the batch
-    process_batch(runs_df, idx_path, spe_id, download_method=download_method, linear=linearmode, workers=workers, threads=threads)
+# Check that both files exists
+if not os.path.exists(idx_path):
+    print(f"kallisto index for taxid{taxid} is not present.")
+    if os.path.exists(cds_path):
+        runtime, exit_code, _ = download_functions.kallisto_index(idx_path=idx_path, cds_path=cds_path)
+        print(f"kallisto index for taxid{taxid} has been generated.")
+    else:
+        print(f"CDS for taxid{taxid} is also not present.")
+elif not runtable_exists(taxid):
+    print(f"Runtable for taxid{taxid} is not present.")
+else:
+    completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=False)
+    print(f"Attempting to download {completed_df.shape[0]}/{completed_df.shape[0] + incomplete_df.shape[0]} Run IDs for taxid{taxid} ...")
+    download_functions.process_batch(incomplete_df, idx_path=idx_path, spe_id=f"taxid{taxid}", download_method=download_method, workers=workers, threads=threads, linear=linearmode)
+    completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=True)
+    checkfiles.update_runinfo_main(taxid)
