@@ -25,7 +25,7 @@ from preprocess.despatch import fetch_runtable
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'This script despatches all species in job-list to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
     parser.add_argument('-m', '--method', nargs=1, metavar='download_method',
-                        help="This script allows for download methods: 'ascp-bash', 'ascp-python' or 'curl'.", choice=['ascp-bash', 'ascp-python', 'curl'],
+                        help="This script allows for download methods: 'ascp-bash', 'ascp-python' or 'curl'.", choices=['ascp-bash', 'ascp-python', 'curl'],
                         dest='download_method', type=str, required=True)
     parser.add_argument('-w', '--workers',nargs=1, metavar='num_workers', default=['8'], required=True, dest='workers', help="Specify the number of workers to spawn for multiple process if `-l` is not chosen.")
     parser.add_argument('-t', '--threads',nargs=1, metavar='num_threads', default=['2'], required=True, dest='threads', help="Specify the number of threads to use for each kallisto quantification call.")
