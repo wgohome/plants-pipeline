@@ -19,22 +19,26 @@ from download.download_functions import process_batch, kallisto_index
 import helpers
 
 parser = argparse.ArgumentParser(description = 'This script despatches runids to download.py to run the ascp download and kallisto quantification for each Run ID in parallel.', epilog = 'By Mutwil Lab')
-parser.add_argument('-s', '--species', nargs=1, metavar='species_id',
-                    help='Enter the species id to be downloaded. For instance, Arabidopsis thaliana\'s species id would be \'taxid3702\'.',
-                    dest='spe_id', type=str, required=True)
-parser.add_argument('-c', '--cds', nargs=1, metavar='cds_filename',
-                    help='Enter the file name of the cds .fasta file to use. Do not include the full path, just the filename. It is expected that cds file is places in pipeline-data/download/cds directory.',
-                    dest='cds_filename', type=str, required=True)
+parser.add_argument('-t', '--taxid', metavar='taxid',
+                        help='Enter the taxanomic id of the species to be downloaded, in quotes. For example, "3702" for Arabidopsis thaliana.',
+                        dest='taxid', type=int, required=False)
+# parser.add_argument('-s', '--species', nargs=1, metavar='species_id',
+#                     help='Enter the species id to be downloaded. For instance, Arabidopsis thaliana\'s species id would be \'taxid3702\'.',
+#                     dest='spe_id', type=str, required=True)
+# parser.add_argument('-c', '--cds', nargs=1, metavar='cds_filename',
+#                     help='Enter the file name of the cds .fasta file to use. Do not include the full path, just the filename. It is expected that cds file is places in pipeline-data/download/cds directory.',
+#                     dest='cds_filename', type=str, required=True)
 parser.add_argument('-m', '--method', nargs=1, metavar='download_method',
-                    help="This script allows for download methods: 'ascp-bash', 'ascp-python' or 'curl'.",
+                    help="This script allows for download methods: 'ascp-bash', 'ascp-python' or 'curl'.", choice=['ascp-bash', 'ascp-python', 'curl'],
                     dest='download_method', type=str, required=True)
 parser.add_argument('-l', '--linearmode', action='store_true', default=False, required=False, dest='linearmode', help="Include this optional tag if download is to be in linear mode, else default will be parallel processes. If --method specified is ascp-bash")
 parser.add_argument('-w', '--workers',nargs=1, metavar='num_workers', default=['8'], required=False, dest='workers', help="Optional. Specify the number of workers to spawn for multiple process if `-l` is not chosen. Otherwise, this argument will be ignored..")
 parser.add_argument('-t', '--threads',nargs=1, metavar='num_threads', default=['2'], required=False, dest='threads', help="Optional. Specify the number of threads to use for each kallisto quantification call.")
 args = parser.parse_args()
-spe_id = args.spe_id[0]
-cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
-idx_path = f"{DATA_PATH}/download/idx/{spe_id}.idx"
+# spe_id = args.spe_id[0]
+taxid = args.taxid
+# cds_path = f"{DATA_PATH}/download/cds/{args.cds_filename[0]}"
+# idx_path = f"{DATA_PATH}/download/idx/{spe_id}.idx"
 runtable_path = helpers.latest_runtable_path(spe_id)
 download_method = args.download_method[0].lower()
 linearmode = args.linearmode
