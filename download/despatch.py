@@ -51,7 +51,7 @@ elif not runtable_exists(taxid):
     print(f"Runtable for taxid{taxid} is not present.")
 else:
     completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=False)
-    print(f"Attempting to download {completed_df.shape[0]}/{completed_df.shape[0] + incomplete_df.shape[0]} Run IDs for taxid{taxid} ...")
+    print(f"Attempting to download {incomplete_df.shape[0]} undownloaded Run IDs out of a total of {completed_df.shape[0] + incomplete_df.shape[0]} Run IDs for taxid{taxid} ...")
     download_functions.process_batch(incomplete_df, idx_path=idx_path, spe_id=f"taxid{taxid}", download_method=download_method, workers=workers, threads=threads, linear=linearmode)
     completed_df, incomplete_df = checkfiles.validate_latest_batch(taxid, to_log=True)
     checkfiles.update_runinfo_main(taxid)
