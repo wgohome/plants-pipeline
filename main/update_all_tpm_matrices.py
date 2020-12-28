@@ -41,10 +41,10 @@ if newonly:
 
 if threads == 0:
     for taxid in taxids:
-        pull_tpm_matrix.write_tpm_matrix(taxid)
+        pull_tpm_matrix.write_tpm_matrix3(taxid)
 elif threads > 0:
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-        futures = [executor.submit(pull_tpm_matrix.write_tpm_matrix, taxid) for taxid in taxids]
+        futures = [executor.submit(pull_tpm_matrix.write_tpm_matrix3, taxid) for taxid in taxids]
         results = []
         for f in concurrent.futures.as_completed(futures):
             results.append(f.result())
