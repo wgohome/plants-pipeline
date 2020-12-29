@@ -161,7 +161,7 @@ def write_tpm_matrix2(taxid):
 #   If there are new genes not in header, append at the back and add the genes to the header
 #   Write the tpm row into the file
 def write_header(genes, filepath):
-    to_write = "gene_id\n" + '\n'.join(genes) + '\n'
+    to_write = "target_id\n" + '\n'.join(genes) + '\n'
     with open(filepath, 'w+') as f:
         f.write(to_write)
 
