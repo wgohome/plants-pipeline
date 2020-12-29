@@ -192,7 +192,10 @@ def bash_loop(spe_id, runs_df, idx_path, init_log_path, runtime_log_path, worker
         }
         to_write = helpers.bash_download_script(attributes) + '\n'
         helpers.write_log(to_write, jobfile_path)
-    os.system(f"cat {jobfile_path}| xargs -I % -P {workers} bash -c %")
+    if workers == 1:
+        os.system(f"bash {jobfile_path}")
+    else:
+        os.system(f"cat {jobfile_path}| xargs -I % -P {workers} bash -c %")
     return None
 
 def process_batch(runs_df, idx_path, spe_id, download_method='ascp-bash', linear=False, workers=8, threads=2):
