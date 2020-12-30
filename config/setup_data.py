@@ -48,6 +48,7 @@ dests = {
         'job-list'
     ],
     'postprocess': [
+        'qc_jointplots',
         'tpm-matrices'
     ]
 }
