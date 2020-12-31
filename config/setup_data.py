@@ -52,7 +52,8 @@ dests = {
         'qc-jointplots',
         'qc-summary',
         'qc-out',
-        'tpm-matrices'
+        'tpm-matrices',
+        'pcc-matrices'
     ]
 }
 
