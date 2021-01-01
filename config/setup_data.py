@@ -53,7 +53,9 @@ dests = {
         'qc-summary',
         'qc-out',
         'tpm-matrices',
-        'pcc-matrices'
+        'pcc-matrices',
+        'percentage-matrices',
+        'gene-classifications'
     ]
 }
 
