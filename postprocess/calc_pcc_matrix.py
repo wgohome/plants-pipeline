@@ -85,7 +85,7 @@ def process_species(taxid):
         pccs = [str(pcc) for pcc in pcc_vec]
         to_write = genes[x] + '\t' + '\t'.join(pccs) + '\n'
         log(out_path, to_write)
-    print(f"Completed for {label}!")
+    print(f"Completed for taxid{taxid}!")
     return None
 
 if __name__ == '__main__':
