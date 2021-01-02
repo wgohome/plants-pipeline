@@ -30,8 +30,13 @@ if __name__ == '__main__':
 def calc_species(path):
     df = pd.read_csv(path, sep='\t', index_col=0, header=0)
     # Filter from qc-out
-    filt_genes = get_filtered_genes(taxid)
-    df = df.loc[:, filt_genes]
+    filt_runids = get_filtered_runids(taxid)
+    # filt_runids must exist in df, is any key doesn't, KeyError will be raised
+    runids = set(df.columns) & set(filt_runids)
+    if (set(filt_runids) - runids) != set():
+        print(f"Not in tpm table: {', '.join((set(filt_runids) - runids))}")
+    df = df.loc[:, runids]
+    pdb.set_trace()
     genes = df.index
     npdata = df.to_numpy().astype('float64')
     npdata = np.nan_to_num(npdata)
@@ -39,7 +44,7 @@ def calc_species(path):
     gaps_sq = ((gaps ** 2).sum(axis = -1))**0.5
     return gaps, gaps_sq, genes
 
-def get_filtered_genes(taxid):
+def get_filtered_runids(taxid):
     path = latest_qc_out()
     with open(path, 'r') as f:
         qc_out = json.load(f)
