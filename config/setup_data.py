@@ -55,7 +55,8 @@ dests = {
         'tpm-matrices',
         'pcc-matrices',
         'percentage-matrices',
-        'gene-classifications'
+        'gene-classifications',
+        'f1-stats'
     ]
 }
 
