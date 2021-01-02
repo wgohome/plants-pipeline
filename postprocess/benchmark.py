@@ -82,7 +82,7 @@ def get_species_stats(taxid):
     if df.empty:
         print(f"taxid{taxid} does not have a percentage matrix yet!")
         return None
-    f1_stats = get_f1_stats(df)
+    f1_stats = get_f1_stats(df, ribosomal_genes)
     stats_df = write_f1_stats(f1_stats, taxid, to_write=True)
 
 if __name__ == '__main__':
