@@ -36,7 +36,6 @@ def calc_species(path):
     if (set(filt_runids) - runids) != set():
         print(f"Not in tpm table: {', '.join((set(filt_runids) - runids))}")
     df = df.loc[:, runids]
-    pdb.set_trace()
     genes = df.index
     npdata = df.to_numpy().astype('float64')
     npdata = np.nan_to_num(npdata)
@@ -101,7 +100,7 @@ def process_species(taxid, bincode="17.1"):
         pcc_vec = np.dot(gaps, gaps[x])/(gaps_sq[x] * gaps_sq)
         pcc_vec = np.nan_to_num(pcc_vec)
         for pcc_cutoff in [i/10 for i in range(1,10)]:
-            neighbors = genes[pcc_vec > pcc_cutoff]
+            neighbors = genes[pcc_vec >= pcc_cutoff]
             ribo_neighbors = set(neighbors) & set(ribosomal_genes)
             if neighbors.empty:
                 percentages[genes[x]][pcc_cutoff] = 0
