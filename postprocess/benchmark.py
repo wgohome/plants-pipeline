@@ -36,7 +36,7 @@ if __name__ == '__main__':
 # df = df3702
 
 def read_percentage_matrix(taxid):
-    files = sorted([file for files in os.listdir(f"{DATA_PATH}postprocess/percentage-matrices") if f"taxid{taxid}" in file])
+    files = sorted([file for file in os.listdir(f"{DATA_PATH}postprocess/percentage-matrices") if f"taxid{taxid}" in file])
     if files == []:
         return pd.DataFrame()
     df = pd.read_csv(f"{DATA_PATH}postprocess/percentage-matrices/{files[-1]}", sep='\t', index_col=0)
