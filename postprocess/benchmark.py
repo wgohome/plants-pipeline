@@ -50,10 +50,10 @@ def get_f1_stats(df, ribosomal_genes):
             continue
         # f1_stats[PCC_cutoff] = {}
         for p_cutoff in [x/10 for x in range(1,10)]:
-            tp = ((df3702['ribosomal'] == True) & (df3702[PCC_cutoff] >= p_cutoff)).sum()
-            fp = ((df3702['ribosomal'] == False) & (df3702[PCC_cutoff] >= p_cutoff)).sum()
-            fn = ((df3702['ribosomal'] == True) & (df3702[PCC_cutoff] < p_cutoff)).sum()
-            tn = ((df3702['ribosomal'] == False) & (df3702[PCC_cutoff] < p_cutoff)).sum()
+            tp = ((df['ribosomal'] == True) & (df[PCC_cutoff] >= p_cutoff)).sum()
+            fp = ((df['ribosomal'] == False) & (df[PCC_cutoff] >= p_cutoff)).sum()
+            fn = ((df['ribosomal'] == True) & (df[PCC_cutoff] < p_cutoff)).sum()
+            tn = ((df['ribosomal'] == False) & (df[PCC_cutoff] < p_cutoff)).sum()
             precision = tp/(tp+fp)
             recall = tp/(tp+fn)
             f1 = (2*precision*recall)/(precision+recall)
