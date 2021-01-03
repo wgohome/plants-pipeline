@@ -107,12 +107,15 @@ def plot_qc(df, taxid):
     g = sns.jointplot('p_pseudoaligned', 'log10(processed)', data = df, kind="reg", xlim=(0, 100), color='b', scatter=False,
                       height=10, marginal_kws=dict(bins=20, rug=True))
     g.ax_joint.cla()
-    c_dic = {1: 'b', 0: 'r'}
-    g.ax_joint.scatter(df['p_pseudoaligned'], df['log10(processed)'], c=df['pass'].apply(lambda x: c_dic[x]), label=['passed', 'failed'], marker='x',)
+    # c_dic = {1: 'b', 0: 'r'}
+    # g.ax_joint.scatter(df['p_pseudoaligned'], df['log10(processed)'], c=df['pass'].apply(lambda x: c_dic[x]), label=['passed', 'failed'], marker='x',)
+    sc0 = g.ax_joint.scatter(df[df['pass'] == 0]['p_pseudoaligned'], df[df['pass'] == 0]['log10(processed)'], c='r', label='failed', marker='x')
+    sc1 = g.ax_joint.scatter(df[df['pass'] == 1]['p_pseudoaligned'], df[df['pass'] == 1]['log10(processed)'], c='b', label='passed', marker='x')
     g.ax_marg_x.set_title(f"taxid{taxid}", fontsize=16)
     g.ax_joint.set_xlabel("% reads pseudoaligned", fontsize=12)
     g.ax_joint.set_ylabel("log10(reads processed)", fontsize=12)
     # g.fig.set_size_inches(12,10)
+    g.ax_joint.legend(loc="lower center")
     plt.tight_layout()
     g.fig.savefig(f"{DATA_PATH}postprocess/qc-jointplots/taxid{taxid}_qc_jointplot.png")
 
