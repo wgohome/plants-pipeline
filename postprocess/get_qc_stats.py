@@ -38,6 +38,8 @@ if __name__ == '__main__':
 
 def get_qc_stats(taxid):
     df = read_runinfo(taxid)
+    if df.empty:
+        return None, None, None
     qc_df = get_qc_matrix(df)
     df, logn_cut, p_cut = set_threshold(df, qc_df)
     qc_df.to_csv(f"{DATA_PATH}postprocess/qc-matrices/{helpers.get_timestamp()}-taxid{taxid}_qc_matrix.txt", sep='\t')
@@ -46,12 +48,18 @@ def get_qc_stats(taxid):
 
 def update_qc_stats(taxid, logn_cut, p_cut):
     df = read_runinfo(taxid)
+    if df.empty:
+        return None, None, None
     df, logn_cut, p_cut = set_threshold(df, logn_cut=logn_cut, p_cut=p_cut)
+    # Did not write qc-matrices
     plot_qc(df, taxid)
     return logn_cut, p_cut, df
 
 def read_runinfo(taxid):
     path = f"{DATA_PATH}download/runinfo-main/taxid{taxid}_runinfo_main.txt"
+    if not os.path.exists(path):
+        print(f"{path} does not exist!")
+        return pd.DataFrame()
     df = pd.read_csv(path, sep='\t', index_col='runid', usecols=['n_processed', 'p_pseudoaligned', 'runid'])
     df['log10(processed)'] = df['n_processed'].apply(math.log10)
     return df
@@ -110,23 +118,27 @@ def get_cutoffs(taxids):
     cutoffs = {}
     for taxid in taxids:
         print(f"Processing QC for taxid{taxid} ...")
-        logn_cut, p_cut, n = get_qc_stats(taxid)
+        logn_cut, p_cut, n = get_qc_stats(taxid) # writes qc-matrices, plots qc-jointplots for taxid
         cutoffs[taxid] = {
             'logn_cut': logn_cut,
             'p_cut': p_cut,
             'n': n
         }
     cutoff_df = pd.DataFrame(cutoffs).T
+    # writes qc summary
     cutoff_df.to_csv(f"{DATA_PATH}postprocess/qc-summary/{helpers.get_timestamp()}-cutoffs.txt", sep='\t', header=['log10(processed) cutoff', '% pseudoaligned cutoff', 'Number of Run IDs passed'])
     return None
 
 def update_cutoffs():
-    file = sorted(os.listdir(f"{DATA_PATH}postprocess/qc-summary/"))[0]
-    path = f"{DATA_PATH}postprocess/qc-summary/{file}"
+    file = sorted(os.listdir(f"{DATA_PATH}postprocess/qc-summary/"))
+    if file == []:
+        print(f"Does not have a qc-matrix yet!")
+        return None
+    path = f"{DATA_PATH}postprocess/qc-summary/{file[-1]}"
     summary_df = pd.read_csv(path, sep='\t', header=0, names=['logn_cut', 'p_cut', 'n'], index_col=0)
     filtered_runids = {}
     for row in summary_df.itertuples():
-        logn_cut, p_cut, df = update_qc_stats(row.Index, row.logn_cut, row.p_cut)
+        logn_cut, p_cut, df = update_qc_stats(row.Index, row.logn_cut, row.p_cut) # plots qc-jointplot
         summary_df.loc[row.Index, 'n'] = df['pass'].sum()
         filtered_runids[row.Index] = df[df['pass'] == 1].index.tolist()
     # Update qc-summary
@@ -139,7 +151,10 @@ def update_cutoffs():
 
 if __name__ == "__main__":
     if update:
-        update_cutoffs()
+        if not taxids:
+            print("Do specify taxids to process!")
+        else:
+            update_cutoffs()
     else:
         if not taxids:
             print("Do specify taxids to process!")
