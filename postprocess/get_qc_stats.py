@@ -14,7 +14,7 @@ import os
 import math
 import numpy as np
 import pandas as pd
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 import json
 import pdb
@@ -109,7 +109,7 @@ def plot_qc(df, taxid):
     g.ax_joint.cla()
     c_dic = {1: 'b', 0: 'r'}
     g.ax_joint.scatter(df['p_pseudoaligned'], df['log10(processed)'], c=df['pass'].apply(lambda x: c_dic[x]), label=['passed', 'failed'], marker='x',)
-    g.fig.suptitle(f"taxid{taxid}", y=1.02, fontsize=16)
+    g.ax_marg_x.set_title(f"taxid{taxid}", fontsize=16)
     g.ax_joint.set_xlabel("% reads pseudoaligned", fontsize=12)
     g.ax_joint.set_ylabel("log10(reads processed)", fontsize=12)
     # g.fig.set_size_inches(12,10)
@@ -153,10 +153,10 @@ def update_cutoffs():
 
 if __name__ == "__main__":
     if update:
-        if not taxids:
-            print("Do specify taxids to process!")
-        else:
-            update_cutoffs()
+        # if not taxids:
+        #     print("Do specify taxids to process!")
+        # else:
+        update_cutoffs()
     else:
         if not taxids:
             print("Do specify taxids to process!")
