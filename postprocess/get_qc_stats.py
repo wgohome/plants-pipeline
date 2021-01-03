@@ -109,9 +109,11 @@ def plot_qc(df, taxid):
     g.ax_joint.cla()
     c_dic = {1: 'b', 0: 'r'}
     g.ax_joint.scatter(df['p_pseudoaligned'], df['log10(processed)'], c=df['pass'].apply(lambda x: c_dic[x]), label=['passed', 'failed'], marker='x',)
+    g.fig.suptitle(f"taxid{taxid}", y=1.02, fontsize=16)
     g.ax_joint.set_xlabel("% reads pseudoaligned", fontsize=12)
     g.ax_joint.set_ylabel("log10(reads processed)", fontsize=12)
     # g.fig.set_size_inches(12,10)
+    plt.tight_layout()
     g.fig.savefig(f"{DATA_PATH}postprocess/qc-jointplots/taxid{taxid}_qc_jointplot.png")
 
 def get_cutoffs(taxids):
