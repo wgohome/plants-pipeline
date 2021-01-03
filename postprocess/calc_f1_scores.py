@@ -14,6 +14,7 @@ import os
 import numpy as np
 import pandas as pd
 import json
+import warnings
 import pdb
 # Relative imports of CONSTANTS in config/constants.py
 from config.constants import DATA_PATH
@@ -74,7 +75,7 @@ def latest_qc_out():
 def get_genes_set(taxid, bincode="17.1"):
     path = f"{DATA_PATH}postprocess/gene-classifications/taxid{taxid}_mercator.txt"
     if not os.path.exists(path):
-        print("taxid{taxid} gene annotations is not found in pipeline-data/postprocess/gene-classifications/. Make sure it is labelled as taxidXXXX_mercator.txt")
+        print(f"taxid{taxid} gene annotations is not found in pipeline-data/postprocess/gene-classifications/. Make sure it is labelled as taxidXXXX_mercator.txt")
         return []
     df = pd.read_csv(path, sep='\t')
     df['BINCODE'] = df['BINCODE'].str.strip("'")
@@ -91,6 +92,9 @@ def process_species(taxid, bincode="17.1"):
     print(f"Calculating for taxid{taxid} ...")
     # List of ribosomal genes
     ribosomal_genes = get_genes_set(taxid, bincode="17.1")
+    if ribosomal_genes == []:
+        warnings.warn("Check if gene annotations are available or correct in the pipeline-data/postprocess/gene-classifications directory!")
+        return None
     # Calculate PCC components
     gaps, gaps_sq, genes = calc_species(tpm_path)
     percentages = {}
