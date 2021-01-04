@@ -76,9 +76,9 @@ def write_f1_stats(f1_stats, taxid, to_write=False):
         stats_df.to_csv(f"{DATA_PATH}postprocess/f1-stats/{helpers.get_timestamp()}-taxid{taxid}_f1_stats.txt", sep='\t')
     return stats_df
 
-def get_species_stats(taxid):
+def get_species_stats(taxid, bincodes=["17.1.2.1", "17.1.3.1"]):
     df = read_percentage_matrix(taxid)
-    ribosomal_genes = calc_f1_scores.get_genes_set(taxid, bincode="17.1")
+    ribosomal_genes = calc_f1_scores.get_genes_set(taxid, bincodes=bincodes)
     if df.empty:
         print(f"taxid{taxid} does not have a percentage matrix yet!")
         return None
@@ -87,4 +87,4 @@ def get_species_stats(taxid):
 
 if __name__ == '__main__':
     for taxid in taxids:
-        get_species_stats(taxid)
+        get_species_stats(taxid, bincodes=["17.1.2.1", "17.1.3.1"])
