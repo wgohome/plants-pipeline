@@ -72,7 +72,7 @@ def latest_qc_out():
     else:
         return f"{DATA_PATH}postprocess/qc-out/{files[-1]}"
 
-def get_genes_set(taxid, bincode="17.1"):
+def get_genes_set(taxid, bincodes=["17.1.2.1", "17.1.3.1"]):
     path = f"{DATA_PATH}postprocess/gene-classifications/taxid{taxid}_mercator.txt"
     if not os.path.exists(path):
         print(f"taxid{taxid} gene annotations is not found in pipeline-data/postprocess/gene-classifications/. Make sure it is labelled as taxidXXXX_mercator.txt")
@@ -80,18 +80,20 @@ def get_genes_set(taxid, bincode="17.1"):
     df = pd.read_csv(path, sep='\t')
     df['BINCODE'] = df['BINCODE'].str.strip("'")
     df['IDENTIFIER'] = df['IDENTIFIER'].str.strip("'")
-    ribosomal_series = df[df['BINCODE'].str.startswith(bincode)]['IDENTIFIER']
+    submasks = [df['BINCODE'].str.startswith(bincode) for bincode in bincodes]
+    mask = pd.concat(submasks, axis=1).sum(axis=1) > 0
+    ribosomal_series = df[mask]['IDENTIFIER']
     ribosomal_genes = ribosomal_series[ribosomal_series != ''].str.upper().tolist()
     return ribosomal_genes
 
-def process_species(taxid, bincode="17.1"):
+def process_species(taxid, bincodes=["17.1.2.1", "17.1.3.1"]):
     tpm_path = latest_tpm_matrix(taxid)
     if not tpm_path:
         print(f"taxid{taxid} does not have a tpm matrix yet!")
         return None
     print(f"Calculating for taxid{taxid} ...")
     # List of ribosomal genes
-    ribosomal_genes = get_genes_set(taxid, bincode="17.1")
+    ribosomal_genes = get_genes_set(taxid, bincodes=bincodes)
     if ribosomal_genes == []:
         warnings.warn("Check if gene annotations are available or correct in the pipeline-data/postprocess/gene-classifications directory!")
         return None
@@ -117,4 +119,7 @@ def process_species(taxid, bincode="17.1"):
 
 if __name__ == '__main__':
     for taxid in taxids:
-        process_species(taxid, "17.1")
+        process_species(taxid, ["17.1.2.1", "17.1.3.1"])
+
+# "17.1.2.1": 'Protein biosynthesis.ribosome biogenesis.large ribosomal subunit (LSU).LSU proteome'
+# "17.1.3.1": 'Protein biosynthesis.ribosome biogenesis.small ribosomal subunit (SSU).SSU proteome'
