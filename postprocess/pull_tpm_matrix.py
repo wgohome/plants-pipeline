@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--taxid', metavar='taxid',
                         help='Enter the taxid of the species for which the TPM matrix is to be created. For instance, Arabidopsis thaliana\'s taxid would be \'3702\'.',
                         dest='taxid', type=int, required=True)
-    parser.add_argument('-m', '--method', default=3,
+    parser.add_argument('-m', '--method', default=1,
                         help='Include this optional tag to indicate which method should be used to extract the TPM values. By default, method 3 will be used, which is the least RAM intensive',
                         dest='method', type=int, required=False)
     args = parser.parse_args()
