@@ -40,6 +40,7 @@ def read_percentage_matrix(taxid):
     if files == []:
         return pd.DataFrame()
     df = pd.read_csv(f"{DATA_PATH}postprocess/percentage-matrices/{files[-1]}", sep='\t', index_col=0)
+    df.index = df.index.str.upper()
     return df
 
 def get_f1_stats(df, ribosomal_genes):
