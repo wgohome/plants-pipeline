@@ -61,6 +61,7 @@ def get_tpm_matrix(taxid):
         shutil.rmtree(unzipped_path(runid))
     if series:
         tpm_matrix = pd.concat(series, axis=1)
+        tpm_matrix.index = tpm_matrix.index.str.upper()
         return tpm_matrix
     else:
         return pd.DataFrame()
