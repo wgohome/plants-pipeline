@@ -107,6 +107,7 @@ def process_species(taxid, bincodes=["17.1.2.1", "17.1.3.1"]):
         pcc_vec = np.nan_to_num(pcc_vec)
         for pcc_cutoff in [i/10 for i in range(1,10)]:
             neighbors = genes[pcc_vec >= pcc_cutoff]
+            neighbors = neighbors.str.upper()
             ribo_neighbors = set(neighbors) & set(ribosomal_genes)
             if neighbors.empty:
                 percentages[genes[x]][pcc_cutoff] = 0
