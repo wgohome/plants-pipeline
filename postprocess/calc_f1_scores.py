@@ -100,8 +100,8 @@ def process_species(taxid, bincodes=["17.1.2.1", "17.1.3.1"]):
     # Calculate PCC components
     gaps, gaps_sq, genes = calc_species(tpm_path)
     percentages = {}
-    for x in range(genes.size):
-    # for x in range(10):
+    # for x in range(genes.size):
+    for x in range(10):
         percentages[genes[x]] = {}
         pcc_vec = np.dot(gaps, gaps[x])/(gaps_sq[x] * gaps_sq)
         pcc_vec = np.nan_to_num(pcc_vec)
@@ -114,6 +114,7 @@ def process_species(taxid, bincodes=["17.1.2.1", "17.1.3.1"]):
             else:
                 percentages[genes[x]][pcc_cutoff] = len(ribo_neighbors)/len(neighbors)
     df = pd.DataFrame(percentages).T
+    df.index = df.index.str.upper()
     df.to_csv(f"{DATA_PATH}postprocess/percentage-matrices/{helpers.get_timestamp()}-taxid{taxid}_percentages.txt", sep='\t')
     print(f"Completed for taxid{taxid}!")
     return None
