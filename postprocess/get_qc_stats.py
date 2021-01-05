@@ -95,7 +95,10 @@ def suggest_threshold(df, qc_df):
         minimum = df.shape[0]*0.5
         vals = qc_df[qc_df >= minimum].values.flatten()
         # Find biggest treshold to hit 60% of all samples
-        n = vals[~np.isnan(vals)].min()
+        try:
+            n = vals[~np.isnan(vals)].min()
+        except:
+            return 6.5, 0.5
         n_position = qc_df.where(qc_df == n).dropna(axis=0, how='all').dropna(axis=1, how='all')
         # row = qc_df[(qc_df == n).sum(axis=1) == 1].where(qc_df == n).index[0]
         row = n_position.index[0]
