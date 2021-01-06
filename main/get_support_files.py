@@ -14,6 +14,8 @@ import numpy as np
 import pandas as pd
 import os
 import wget
+import gzip
+import shutil
 import concurrent.futures
 import warnings
 import pdb
@@ -40,14 +42,27 @@ latest_job_file = max(os.listdir(job_list_dir))
 raw_job_df = pd.read_csv(f"{job_list_dir}{latest_job_file}", sep='\t')
 job_df = raw_job_df.loc[raw_job_df['cds_link'].notnull(),:]
 
+def gunzip_custom(gzip_path, gunzip_path):
+    if os.path.exists(gunzip_path):
+        os.remove(gunzip_path)
+    with gzip.open(gzip_path, 'rb') as f_in:
+        with open(gunzip_path, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    os.remove(gzip_path)
+
 def process_cds(taxid, cds_link):
     idx_path = f"{DATA_PATH}/download/idx/taxid{taxid}.idx"
-    cds_path = f"{DATA_PATH}/download/cds/taxid{taxid}.cds.fasta"
+    cds_path = f"{DATA_PATH}/download/cds/taxid{taxid}.cds.fa"
     if os.path.exists(idx_path):
         print(f"😊 kallisto index already exists for taxid{taxid}")
         return 1, idx_path
     elif not os.path.exists(cds_path):
-        wget.download(cds_link, f"{DATA_PATH}/download/cds/taxid{taxid}.cds.fasta")
+        if cds_link.endswith('gz'):
+            cds_gz_path = cds_path + ".gz"
+            wget.download(cds_link, cds_gz_path)
+            gunzip_custom(cds_gz_path, cds_path)
+        else:
+            wget.download(cds_link, cds_path)
         if os.path.exists(cds_path):
             print(f"🙌🏻 Downloaded CDS for taxid{taxid}")
         else:
