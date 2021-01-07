@@ -114,7 +114,7 @@ def plot_qc(df, taxid):
     # g.ax_joint.scatter(df['p_pseudoaligned'], df['log10(processed)'], c=df['pass'].apply(lambda x: c_dic[x]), label=['passed', 'failed'], marker='x',)
     sc0 = g.ax_joint.scatter(df[df['pass'] == 0]['p_pseudoaligned'], df[df['pass'] == 0]['log10(processed)'], c='r', label='failed', marker='o', alpha=0.3)
     sc1 = g.ax_joint.scatter(df[df['pass'] == 1]['p_pseudoaligned'], df[df['pass'] == 1]['log10(processed)'], c='b', label='passed', marker='o', alpha=0.3)
-    g.ax_marg_x.set_title(f"taxid{taxid}", fontsize=16)
+    g.ax_marg_x.set_title(f"taxid{taxid}", fontsize=16, pad=20)
     g.ax_joint.set_xlabel("% reads pseudoaligned", fontsize=12)
     g.ax_joint.set_ylabel("log10(reads processed)", fontsize=12)
     g.ax_joint.set(xlim=(-4,100), ylim=(0,9))
