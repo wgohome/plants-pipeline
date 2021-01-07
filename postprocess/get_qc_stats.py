@@ -133,6 +133,7 @@ def get_cutoffs(taxids):
             'n': n
         }
     cutoff_df = pd.DataFrame(cutoffs).T
+    cutoff_df = cutoff_df[['logn_cut', 'p_cut', 'n']] # Make sure columns in the right order to write
     # writes qc summary
     cutoff_df.to_csv(f"{DATA_PATH}postprocess/qc-summary/{helpers.get_timestamp()}-cutoffs.txt", sep='\t', header=['log10(processed) cutoff', '% pseudoaligned cutoff', 'Number of Run IDs passed'])
     return None
