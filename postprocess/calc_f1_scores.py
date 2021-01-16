@@ -30,13 +30,14 @@ if __name__ == '__main__':
 
 def calc_species(path):
     df = pd.read_csv(path, sep='\t', index_col=0, header=0)
+    df.columns = df.columns.str.upper()
     # Filter from qc-out
     filt_runids = get_filtered_runids(taxid)
     # filt_runids must exist in df, is any key doesn't, KeyError will be raised
-    runids = set(df.columns.str.upper()) & set(filt_runids)
+    runids = set(df.columns) & set(filt_runids)
     if (set(filt_runids) - runids) != set():
         print(f"Not in tpm table: {', '.join((set(filt_runids) - runids))}")
-    df = df.loc[:, runids]
+    df = df.loc[:, df.columns.intersection(runids)]
     genes = df.index.str.upper()
     npdata = df.to_numpy().astype('float64')
     npdata = np.nan_to_num(npdata)
