@@ -103,7 +103,7 @@ def process_species(taxid, bincodes=["17.1.2.1", "17.1.3.1"]):
     # Calculate PCC components
     gaps, gaps_sq, genes = calc_species(tpm_path)
     if len(set(ribosomal_genes) & set(genes)) == 0:
-        warnings.warn("Check if gene IDs in gene annotations are the same as the gene IDs used in the TPM matrices.")
+        warnings.warn(f"taxid{taxid}: Check if gene IDs in gene annotations are the same as the gene IDs used in the TPM matrices.")
         return None
     percentages = {}
     for x in range(genes.size):
