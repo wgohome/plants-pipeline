@@ -33,11 +33,11 @@ def calc_species(path):
     # Filter from qc-out
     filt_runids = get_filtered_runids(taxid)
     # filt_runids must exist in df, is any key doesn't, KeyError will be raised
-    runids = set(df.columns) & set(filt_runids)
+    runids = set(df.columns.str.upper()) & set(filt_runids)
     if (set(filt_runids) - runids) != set():
         print(f"Not in tpm table: {', '.join((set(filt_runids) - runids))}")
     df = df.loc[:, runids]
-    genes = df.index
+    genes = df.index.str.upper()
     npdata = df.to_numpy().astype('float64')
     npdata = np.nan_to_num(npdata)
     gaps = npdata - npdata.mean(axis=-1).reshape(-1, 1)
@@ -48,7 +48,9 @@ def get_filtered_runids(taxid):
     path = latest_qc_out()
     with open(path, 'r') as f:
         qc_out = json.load(f)
-    return qc_out.get(str(taxid))
+    runids = qc_out.get(str(taxid))
+    runids = [runid.upper() for runid in runids]
+    return runids
 
 def pcc_neighbours(gaps, gaps_sq, x):
     pcc_vec = np.dot(gaps, gaps[x])/(gaps_sq[x] * gaps_sq)
