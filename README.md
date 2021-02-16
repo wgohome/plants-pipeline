@@ -6,6 +6,8 @@ This repository is found in [this Github Repository](https://github.com/wirriamm
 
 [Contact me](mailto:will0046@e.ntu.edu.sg) for feedback or reporting bugs.
 
+[A. First Setup]()
+
 ## A. First setup
 
 Clone this repository to your machine. Ensure the working directory is in the main plants-pipeline directory.
@@ -109,7 +111,7 @@ The same list will also be foind in `pipeline-data/preprocess/job-list/` directo
 ```
 python main/get_support_files.py
 ```
-This script will run based on the latest timestamped file in `pipeline-data/preprocess/job-list/`. (It is the file in which you have added the urls under `cds_link` column.) 
+This script will run based on the latest timestamped file in `pipeline-data/preprocess/job-list/`. (It is the file in which you have added the urls under `cds_link` column.)
 
 Note that occassionally, NCBI website does face a lagging server, therefore web scraping may fail. In that case, rerun this segment, or try again another day.
 
