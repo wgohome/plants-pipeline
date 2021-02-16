@@ -43,6 +43,7 @@ runtable_exists = lambda taxid: len([file for file in os.listdir(f"{DATA_PATH}/p
 if not os.path.exists(idx_path):
     print(f"kallisto index for taxid{taxid} is not present.")
     if os.path.exists(cds_path):
+        # TODO need to download CDS if not present
         runtime, exit_code, _ = download_functions.kallisto_index(idx_path=idx_path, cds_path=cds_path)
         print(f"kallisto index for taxid{taxid} has been generated.")
     else:
