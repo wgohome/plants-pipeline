@@ -2,7 +2,7 @@
 
 > This segment only needs to be implemented at the first setup of this repository on your local machine/server.
 
-Begin by cloning the repository to a desired directory on your local machine/server using either one or two of these commands:
+Begin by cloning the repository to a desired directory on your local machine/server using either one of these two commands:
 
 By http:
 ```
@@ -79,31 +79,3 @@ Create a `.env` file in the `plants-pipeline` directory, speciying your own NCBI
 NCBI_API_KEY = "{enter_the_key}"
 ```
 A personal NCBI API Key can be obtained by signing up for an NCBI account. Guides can be found [here](https://www.ncbi.nlm.nih.gov/books/NBK25497/#top)
-
-## B. For each subsequent run of the pipeline
-
-### Set up environment and dependencies
-
-Begin by entering the main directory of this pipeline, which is `plants-pipeline` if you cloned from this Github repository.
-
-```
-cd /path/to/plants-pipeline
-```
-
-Run these commands to set up the environment for each new session.
-
-To activate this python environment and all its packages:
-```
-source proj_env/bin/activate
-```
-
-Then, to setup kallisto, ascp commands and other dependencies,
-
-For MacOS,
-```
-source config/setup_mac.sh
-```
-For Linux,
-```
-source config/setup_lin.sh
-```
