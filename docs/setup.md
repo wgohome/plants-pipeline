@@ -78,4 +78,6 @@ Create a `.env` file in the `plants-pipeline` directory, speciying your own NCBI
 ```
 NCBI_API_KEY = "{enter_the_key}"
 ```
-A personal NCBI API Key can be obtained by signing up for an NCBI account. Guides can be found [here](https://www.ncbi.nlm.nih.gov/books/NBK25497/#top)
+A personal NCBI API Key can be obtained by signing up for an NCBI account. Guides can be found [here](https://www.ncbi.nlm.nih.gov/books/NBK25497/#top). Once logged into your NCBI account, go to https://www.ncbi.nlm.nih.gov/account/settings/ to retrieve your API Key.
+
+The `.env` file is not tracked by git as specified in `.gitignore` file and this will be private to your local machine.

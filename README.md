@@ -12,7 +12,7 @@ This repository is found in [this Github Repository](https://github.com/wirriamm
 
 This segment only needs to be implemented at the first setup of this repository on your local machine/server.
 
-[## B. Every initialization for each session](https://github.com/wirriamm/plants-pipeline/blob/master/docs/initialize.md)
+[## B. Initialization for each session](https://github.com/wirriamm/plants-pipeline/blob/master/docs/initialize.md)
 
 These commands need to be run everytime the pipeline is accessed from a new terminal session. They will load the python environment with the installed packages, and add ascp and kallisto commands to the global environment $PATH. If kallisto or ascp(Aspera CLI) is not downloaded, they will also be downloaded.
 
