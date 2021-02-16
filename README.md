@@ -1,4 +1,4 @@
-# Tera Transcriptomics Pipeline
+# LSTrAP-Kingdom: an automated pipeline to generate annotated gene expression atlases for kingdoms of life
 
 By [**NTU Plants Systems Biology and Evolution Laboratory**](https://www.plant.tools)
 
