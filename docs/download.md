@@ -1,23 +1,25 @@
+# Download Guides
+
 ## C. Bulk Run
 
 ### C1. Get species list
 ```
 python main/get_species_list.py -n viridiplantae -t 33090
 ```
-- `-n` is for the taxanomic name of the family or any other ranks above species.
-- `-t` is for the taxanomic id of that name.
+- `-n` is for the taxanomic name of the clade of interest, comprising a subset of species.
+- `-t` is for the taxanomic id of the clade of interest.
 
-The species list will be found in `pipeline-data/preprocess/species-list/` directory.
+The species list will be produced and stored in `pipeline-data/preprocess/species-list/` directory. This is merely for reference, and should not be edited.
 
-The same list will also be foind in `pipeline-data/preprocess/job-list/` directory. This tsv file is the one to be editted by the user in an Excel or equivalent interface. For the species to be downloaded, user can input the ftp/http url to the cds file for the species under the `cds_link` column. For species that the user does not want to download (number of experiments too low), the user can delete the row from this file or just leave the field under `cds_link` blank. Only species rows with a filled CDS link will be processed by the pipeline.
+The same list will also be found in `pipeline-data/preprocess/job-list/` directory. This tsv file is the one <ins>to be editted by the user</ins> in an Excel or equivalent interface. For the species to be downloaded, user can input the ftp/http url to the cds file for the species under the `cds_link` column. For species that the user does not want to download (number of experiments too low), the user can delete the row from this file or just leave the field under `cds_link` blank. Only species rows with a filled CDS link will be processed by the pipeline.
 
 ### C2. Download cds and runtables, create kallisto index
 ```
 python main/get_support_files.py
 ```
-This script will run based on the latest timestamped file in `pipeline-data/preprocess/job-list/`. (It is the file in which you have added the urls under `cds_link` column.)
+This script will run based on the latest timestamped file in `pipeline-data/preprocess/job-list/`. (It is the file in step C1, where you have added the urls under `cds_link` column.)
 
-Note that occassionally, NCBI website does face a lagging server, therefore web scraping may fail. In that case, rerun this segment, or try again another day.
+Note that occassionally, NCBI website does face a sluggish server, therefore web scraping may timeout and fail. In that case, rerun this segment, or try this command again another day.
 
 ### C3. Running the download job
 ```
@@ -32,11 +34,13 @@ The compulsory arguments are:
 
 ### C4. Checking the download status
 
-Download status can be checked from `pipeline-data/download/logs/status/YYYYMMDD-HHMMSS_job.log`. This file will be updated as the download proceeds.
+Download status can be checked from `pipeline-data/download/logs/status/YYYYMMDD-HHMMSS_job.log`. This file will be updated line by line as the download proceeds.
 
 ### C5. Reinitiating download
 
-If upon checking the status logs for a batch of mass download, you notice that many species have a high number of failed downloads, you can re-run the command of section C3. This will download only the experiments/Run IDs that have previously failed.
+If upon checking the status logs for a batch of mass download, you notice that many species have a high number of failed downloads, you can re-run the command of section C3. That will download only the experiments/Run IDs that have previously failed.
+
+Should the first batch download gets terminated halfway, command in C3 can also be re-run to continue from where the download left off at.
 
 ### C6. Extracting run info tables and tpm matrices
 
@@ -44,6 +48,11 @@ After bulk download and/or re-initiating bulk downloads to a satisfactory covera
 ```
 python main/update_all_tpm_matrices.py
 ```
+
+The arguments are:
+
+- `-t` is the number of threads to use. If t = 0 is specified, each species TPM values will be extracted linearly. If t > 1, each species TPM values will be extracted in parallel, using a maximum of t threads.
+- `-n` is the newonly tag to specift that only species whose TPM matrix has not been produced will be processed. This is useful if the TPM processing breaks halfway and you would like to continue with only the remaining species.
 
 The TPM matrix, with file name timestamped and labelled by taxid, can be found in `pipeline-data/postprocess/tpm-matrices`.
 
