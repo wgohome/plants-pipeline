@@ -28,4 +28,7 @@ This repository is found in [this Github Repository](https://github.com/wirriamm
 
 - This segment provides an overview of the structure of the directories in the main scripts `plants-pipeline` directory and the data directory `pipeline-data`.
 
-[**E. Postprocessing**](https://github.com/wirriamm/plants-pipeline/blob/master/docs/dir_structure.md)
+[**E. Postprocessing**](https://github.com/wirriamm/plants-pipeline/blob/master/docs/postprocess.md)
+
+- After the download job is completed, these are the steps needed to generate the TPM matrices and perform quality control
+
