@@ -10,6 +10,7 @@
 
 The directory tree is as such:
 
+```
 pipeline-data
 - download
   - bash-jobfiles
@@ -43,3 +44,4 @@ pipeline-data
   - sra-annotation2s
   - sra-annotations
   - sra-runtables
+```
