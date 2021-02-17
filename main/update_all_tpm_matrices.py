@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser.add_argument('-n', '--newonly', action='store_true', default=False,
                         help='Include this optional tag if you only want to process species whose matrices does not yet exist.',
                         dest='newonly', required=False)
-    parser.add_argument('-m', '--method', choices=[1, 2, 3], default=3,
+    parser.add_argument('-m', '--method', choices=[1, 2, 3], default=1,
                         help='Include this optional tag to specify the method to use to pull the tpm values.',
                         dest='method', type=int, required=False)
     args = parser.parse_args()
@@ -51,7 +51,7 @@ write_tpm = methods[method]
 
 if threads == 0:
     for taxid in taxids:
-        pull_tpm_matrix.write_tpm_matrix3(taxid)
+        pull_tpm_matrix.write_tpm(taxid)
 elif threads > 0:
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         futures = [executor.submit(write_tpm, taxid) for taxid in taxids]
