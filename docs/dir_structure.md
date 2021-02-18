@@ -39,7 +39,11 @@ plants-pipeline
   - helpers.py
   - validate.py (deprecated)
 - postprocess
-  -
+  - pull_tpm_matrix.py
+  - get_qc_stats.py
+  - calc_pcc_matrix.py (deprecated)
+  - calc_f1_scores.py
+  - benchmark.py
 ```
 
 The files marked with an `*` in the directory tree above can be edited by the user. The other files should be left as it is for the pipeline to run.
@@ -160,11 +164,17 @@ Script to create a tpm matrix for one specified species, based on downloaded run
 
 This script generates quality control (QC) statistics with recommended thresholds. Using the generated visualisations and summary statistics, the user can modify the tresholds and run this script again to define the new thresholds.
 
-### plants-pipeline/postprocess/
+### plants-pipeline/postprocess/calc_pcc_matix.py
 
-### plants-pipeline/postprocess/
+Deprecated as the file to be stored will be too big. It will be more efficent to calculate the PCC values on the fly and store only the final output of interest.
 
-### plants-pipeline/postprocess/
+### plants-pipeline/postprocess/calc_f1_scores.py
+
+Calculates the percentage ribosomal gene neighbours each gene have. This prepares the data needed to summarise the F1 scores for each combination of cutoffs in the next step.
+
+### plants-pipeline/postprocess/benchmark.py
+
+Summarise the F1 scores for each combination of PCC cutoff and percentage ribosomal gene cutoff.
 
 ***
 
@@ -331,15 +341,15 @@ Stores a json file of the run IDs passing the QC, for downstream use.
 
 ### pipeline-data/postprocess/f1-stats
 
-For benchmarking purposes
+For F1 scores benchmarking purposes
 
 ### pipeline-data/postprocess/gene-classifications
 
-For benchmarking purposes
+For annotation benchmarking purposes. This is a tsv file obtained from [Mercator 4.2](https://www.plabipd.de/portal/mercator4), using the same CDS used in this pipeline as the input. The file for each species here define the Mapman Bin assigned to each gene in the CDS.
 
 ### pipeline-data/postprocess/percentage-matrices
 
-For benchmarking purposes
+For F1 scores benchmarking purposes
 
 ### pipeline-data/postprocess/pcc-matrices
 
