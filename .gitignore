@@ -8,3 +8,4 @@ local_paths.py
 *nohup*
 /*.sh
 .env
+.ipynb
