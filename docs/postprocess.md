@@ -58,7 +58,7 @@ When filtering is confirmed, a qc-out file will be generated. Here is a sample o
 }
 ```
 
-## F3. Calculating F1 stats
+## F3. Counting percentage ribosomal genes by coexpression
 
 > This part is done for the purpose of benchmarking the coexpression output for the publication. However, scripts can be modified using the available functions here and in other script files to cater to your unique needs for downstream analyses.
 
@@ -71,7 +71,7 @@ python postprocess/coexpression1.py -t XXXX YYYY ZZZZ
 Sample output of the percentage matrix:
 ![sample percentage matrix](https://github.com/wirriamm/plants-pipeline/blob/master/docs/imgs/sample_percentage_matrix.png)
 
-## F4.
+## F4. Calculating the F1 scores
 
 ```
 python postprocess/calc_f1_scores.py -t XXXX YYYY ZZZZ
