@@ -42,8 +42,8 @@ plants-pipeline
   - pull_tpm_matrix.py
   - get_qc_stats.py
   - calc_pcc_matrix.py (deprecated)
+  - coexpression1.py
   - calc_f1_scores.py
-  - benchmark.py
 ```
 
 The files marked with an `*` in the directory tree above can be edited by the user. The other files should be left as it is for the pipeline to run.
@@ -168,11 +168,11 @@ This script generates quality control (QC) statistics with recommended threshold
 
 Deprecated as the file to be stored will be too big. It will be more efficent to calculate the PCC values on the fly and store only the final output of interest.
 
+### plants-pipeline/postprocess/coexpression1.py
+
+Calculates the percentage ribosomal gene neighbours (by coexpression) each gene have. This prepares the data needed to summarise the F1 scores for each combination of cutoffs in the next step.
+
 ### plants-pipeline/postprocess/calc_f1_scores.py
-
-Calculates the percentage ribosomal gene neighbours each gene have. This prepares the data needed to summarise the F1 scores for each combination of cutoffs in the next step.
-
-### plants-pipeline/postprocess/benchmark.py
 
 Summarise the F1 scores for each combination of PCC cutoff and percentage ribosomal gene cutoff.
 
@@ -339,13 +339,13 @@ Stores the jointplots of the samples for visualisation on how to set thresholds.
 
 Stores a json file of the run IDs passing the QC, for downstream use.
 
-### pipeline-data/postprocess/f1-stats
-
-For F1 scores benchmarking purposes
-
 ### pipeline-data/postprocess/gene-classifications
 
 For annotation benchmarking purposes. This is a tsv file obtained from [Mercator 4.2](https://www.plabipd.de/portal/mercator4), using the same CDS used in this pipeline as the input. The file for each species here define the Mapman Bin assigned to each gene in the CDS.
+
+### pipeline-data/postprocess/f1-stats
+
+For F1 scores benchmarking purposes
 
 ### pipeline-data/postprocess/percentage-matrices
 
