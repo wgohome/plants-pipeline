@@ -341,4 +341,8 @@ For benchmarking purposes
 
 For benchmarking purposes
 
+### pipeline-data/postprocess/pcc-matrices
+
+Deprecated as the file to be stored will be too big. It will be more efficent to calculate the PCC values on the fly and store only the final output of interest.
+
 ***

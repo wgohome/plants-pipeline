@@ -20,7 +20,7 @@ This repository is found in [this Github Repository](https://github.com/wirriamm
 
   - The steps to run a download job for multiple species are outlined here.
 
-- **D. Small job download**
+- **D. Small download job**
 
   - The steps to run a download job for a single species are outlined here.
 
