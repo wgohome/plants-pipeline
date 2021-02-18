@@ -38,13 +38,19 @@ python postprocess/get_qc_stats.py -t XXXX YYYY ZZZZ
 
 <ins>**Step 2**: Confirm QC cutoffs</ins>
 
-Confirm QC cutoffs for each species, to generate a json for the accepted run IDs for each species.
+Confirm QC cutoffs for each species, to generate a json for the accepted run IDs for each species. The json file will be stored in `pipeline-data/postprocess/qc-out`
 
 ```
 python postprocess/get_qc_stats.py -u
 ```
 
-> TODO: head of the json file
+Sample of a qc-out json file:
+```
+{
+  "3197": ["SRR4450256", "SRR4450257", "SRR4450265", "SRR4450266", ....],
+  "3702": ["SRR5166024", "SRR5166028", "SRR5166023", "SRR5166027", "SRR5166035", "SRR5166034", ...]
+}
+```
 
 ## F3. Calculating F1 stats
 
