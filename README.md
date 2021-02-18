@@ -36,4 +36,6 @@ This repository is found in [this Github Repository](https://github.com/wirriamm
   - Performing coexpression to count number of ribosomal gene neighbours for every gene
 - The F1 scores for the benchmark in the paper are generated using the scripts here.
 
-[**G. Annotation Benchmark**]()
+[**G. Annotation Benchmark**](https://github.com/wirriamm/plants-pipeline/blob/master/docs/annotation_benchmark.md)
+
+- Describes how the annotation accuracy and coverage were derived for the publication.
