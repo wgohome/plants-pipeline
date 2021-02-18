@@ -30,5 +30,10 @@ This repository is found in [this Github Repository](https://github.com/wirriamm
 
 [**F. Postprocessing**](https://github.com/wirriamm/plants-pipeline/blob/master/docs/postprocess.md)
 
-- After the download job is completed, these are the steps needed to generate the TPM matrices and perform quality control
+- After the download job is completed, these are the steps needed to generate the TPM matrices and perform quality control, which includes:
+  - Generating TPM matrices
+  - Quality control
+  - Performing coexpression to count number of ribosomal gene neighbours for every gene
+- The F1 scores for the benchmark in the paper are generated using the scripts here.
 
+[**G. Annotation Benchmark**]()
