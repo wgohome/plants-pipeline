@@ -2,7 +2,7 @@
 
 By [**NTU Plants Systems Biology and Evolution Laboratory**](https://www.plant.tools)
 
-This repository is found in [this Github Repository](https://github.com/wirriamm/plants-pipeline). Do create pull requests for issues/bugs and feature requests. [Contact me](mailto:will0046@e.ntu.edu.sg) for feedback or reporting bugs.
+This repository is found in [this Github Repository](https://github.com/wirriamm/plants-pipeline), with an accompanying paper found [here (preprint version)](https://www.biorxiv.org/content/10.1101/2021.01.23.427930v1.full). Do create pull requests for issues/bugs and feature requests. [Contact me](mailto:will0046@e.ntu.edu.sg) for feedback or reporting bugs.
 
 # Guides
 
