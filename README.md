@@ -39,3 +39,5 @@ This repository is found in [this Github Repository](https://github.com/wirriamm
 [**G. Annotation Benchmark**](https://github.com/wirriamm/plants-pipeline/blob/master/docs/annotation_benchmark.md)
 
 - Describes how the annotation accuracy and coverage were derived for the publication.
+
+The figures in the publication were prepared with the code given in this [iPython notebook](https://github.com/wirriamm/plants-pipeline/blob/master/LSTrAP_Kingdom_benchmark.ipynb).
